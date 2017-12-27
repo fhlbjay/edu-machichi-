@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.PotentitalStudentMapper">
+	<resultMap id="base1" type="cn.wolfcode.crm.domain.PotentitalStudent">
+		<id column="id" property="id" jdbcType="BIGINT"/>
+		<result column="age" property="age" jdbcType="INTEGER"/>
+		<result column="gender" property="gender" jdbcType="BIT"/>
+		<result column="name" property="name" jdbcType="VARCHAR"/>
+		<result column="track_times" property="trackTimes" jdbcType="INTEGER"/>
+		<result column="prevDate" property="prevDate" jdbcType="TIMESTAMP"/>
+		<result column="visitDate" property="visitDate" jdbcType="TIMESTAMP"/>
+		<result column="nextDate" property="nextDate" jdbcType="TIMESTAMP"/>
+		<result column="QQ" property="qq" jdbcType="VARCHAR"/>
+		<result column="tel" property="tel" jdbcType="VARCHAR"/>
+		<result column="school" property="school" jdbcType="VARCHAR"/>
+		<result column="track_state" property="trackState" jdbcType="BIT"/>
+		<result column="remark" property="remark" jdbcType="VARCHAR"/>
+		<result column="email" property="email" jdbcType="VARCHAR"/>
+		<result column="weChat" property="weChat" jdbcType="VARCHAR"/>
+		<result column="formBuildDate" property="formBuildDate"/>
+		<result column="inputTime" property="inputTime"/>
+		<result column="address" property="address"/>
+		<result column="major" property="major"/>
+		<result column="focusProblem" property="focusProblem"/>
+		<result column="hasPaid" property="hasPaid"/>
+		<result column="introducer" property="introducer"/>
+		<result column="communicationContext" property="communicationContext"/>
+		<result column="consultationTime" property="consultationTime"/>
+		<result column="summary" property="summary"/>
+		<result column="sn" property="sn"/>
+		<result column="enrollUniversityDate" property="enrollUniversityDate"/>
+		<association property="employee" column="sale_id" javaType="cn.wolfcode.crm.domain.Employee"
+		             select="cn.wolfcode.crm.mapper.EmployeeMapper.selectByPrimaryKey"
+		></association>
+		<association property="classGrade" column="class_id" javaType="cn.wolfcode.crm.domain.ClassGrade"
+		             select="cn.wolfcode.crm.mapper.ClassGradeMapper.selectByPrimaryKey"
+		></association>
+		<association property="intention" column="intention" javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             select="cn.wolfcode.crm.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"
+		></association>
+		<association property="status" column="status" javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             select="cn.wolfcode.crm.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"
+		></association>
+		<association property="education" column="education" javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             select="cn.wolfcode.crm.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"
+		></association>
+		<association property="campus" column="campus_id" javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             select="cn.wolfcode.crm.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"
+		></association>
+		<association property="subject" column="subject_id" javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             select="cn.wolfcode.crm.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"
+		></association>
+		<association property="source" column="source_id" javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             select="cn.wolfcode.crm.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"
+		></association>
+		<association property="clientType" column="clientType_id" javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             select="cn.wolfcode.crm.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"
+		></association>
+		<association property="introducerStu" javaType="cn.wolfcode.crm.domain.PotentitalStudent">
+			<id property="id" column="ps1_id"></id>
+			<result property="name" column="ps1_name"></result>
+		</association>
+		<association property="communicationMethod" column="communicationMethod_id"
+		             javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             select="cn.wolfcode.crm.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"
+		></association>
+		<association property="tracePurpose" column="tracePurpose_id"
+		             javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             select="cn.wolfcode.crm.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"
+		></association>
+		<association property="bigCustomer" column="bigCustomer_id" javaType="cn.wolfcode.crm.domain.Universitytrace"
+		             select="cn.wolfcode.crm.mapper.UniversitytraceMapper.selectByPrimaryKey"
+		></association>
+	</resultMap>
+	<resultMap id="base2" type="cn.wolfcode.crm.domain.PotentitalStudent">
+		<id column="id" property="id" jdbcType="BIGINT"/>
+		<result column="age" property="age" jdbcType="INTEGER"/>
+		<result column="gender" property="gender" jdbcType="BIT"/>
+		<result column="name" property="name" jdbcType="VARCHAR"/>
+		<result column="track_times" property="trackTimes" jdbcType="INTEGER"/>
+		<result column="prevDate" property="prevDate" jdbcType="TIMESTAMP"/>
+		<result column="visitDate" property="visitDate" jdbcType="TIMESTAMP"/>
+		<result column="nextDate" property="nextDate" jdbcType="TIMESTAMP"/>
+		<result column="QQ" property="qq" jdbcType="VARCHAR"/>
+		<result column="tel" property="tel" jdbcType="VARCHAR"/>
+		<result column="school" property="school" jdbcType="VARCHAR"/>
+		<result column="track_state" property="trackState" jdbcType="BIT"/>
+		<result column="remark" property="remark" jdbcType="VARCHAR"/>
+		<result column="email" property="email" jdbcType="VARCHAR"/>
+		<result column="weChat" property="weChat" jdbcType="VARCHAR"/>
+		<result column="formBuildDate" property="formBuildDate"/>
+		<result column="inputTime" property="inputTime"/>
+		<result column="address" property="address"/>
+		<result column="major" property="major"/>
+		<result column="focusProblem" property="focusProblem"/>
+		<result column="hasPaid" property="hasPaid"/>
+		<result column="introducer" property="introducer"/>
+		<result column="communicationContext" property="communicationContext"/>
+		<result column="consultationTime" property="consultationTime"/>
+		<result column="summary" property="summary"/>
+		<result column="sn" property="sn"/>
+		<result column="enrollUniversityDate" property="enrollUniversityDate"/>
+		<association property="classGrade" javaType="cn.wolfcode.crm.domain.ClassGrade" columnPrefix="cg_">
+			<id property="id" column="id"/>
+			<result property="name" column="name"/>
+		</association>
+		<association property="employee" javaType="cn.wolfcode.crm.domain.Employee" columnPrefix="e_">
+			<id property="id" column="id"/>
+			<result property="username" column="username"/>
+		</association>
+		<association property="campus" javaType="cn.wolfcode.crm.domain.SystemDictionaryItem" columnPrefix="campus_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+		<association property="status" javaType="cn.wolfcode.crm.domain.SystemDictionaryItem" columnPrefix="status_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+		<association property="intention" javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             columnPrefix="intention_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+		<association property="education" javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             columnPrefix="education_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+		<association property="subject" javaType="cn.wolfcode.crm.domain.SystemDictionaryItem" columnPrefix="subject_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+		<association property="source" javaType="cn.wolfcode.crm.domain.SystemDictionaryItem" columnPrefix="source_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+		<association property="clientType" javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             columnPrefix="clientType_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+		<association property="communicationMethod" javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             columnPrefix="cm_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+		<association property="tracePurpose" javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             columnPrefix="tracePurpose_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+		<association property="introducerStu" javaType="cn.wolfcode.crm.domain.PotentitalStudent">
+			<id property="id" column="ps1_id"/>
+			<result property="name" column="ps1_name"/>
+		</association>
+		<association property="bigCustomer" javaType="cn.wolfcode.crm.domain.Universitytrace" columnPrefix="bc_">
+			<id property="id" column="id"/>
+			<result property="name" column="name"/>
+		</association>
+	</resultMap>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		DELETE FROM `potentitalstudent`
+		WHERE id = #{id,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" parameterType="cn.wolfcode.crm.domain.PotentitalStudent" useGeneratedKeys="true"
+	        keyProperty="id">
+		INSERT INTO `potentitalstudent` (age, gender, name,
+		                                 sale_id, track_times, prevDate,
+		                                 visitDate, nextDate, QQ,
+		                                 tel, school, intention,
+		                                 campus_id, class_id, status,
+		                                 track_state, remark, education, subject_id, email, formBuildDate, weChat, inputTime,
+		                                 address, major, source_id, clientType_id, focusProblem, hasPaid, introducerStu_id, introducer, communicationMethod_id, enrollUniversityDate
+			, tracePurpose_id, consultationTime, summary, communicationContext, bigCustomer_id, sn
+		)
+		VALUES (#{age,jdbcType=INTEGER}, #{gender,jdbcType=BIT}, #{name,jdbcType=VARCHAR},
+		                                 #{employee.id,jdbcType=BIGINT}, #{trackTimes,jdbcType=INTEGER},
+		                                 #{prevDate,jdbcType=TIMESTAMP},
+		                                 #{visitDate,jdbcType=TIMESTAMP}, #{nextDate,jdbcType=TIMESTAMP},
+		                                 #{qq,jdbcType=VARCHAR},
+		                                 #{tel,jdbcType=VARCHAR}, #{school,jdbcType=VARCHAR},
+			#{intention.id,jdbcType=BIGINT},
+			#{campus.id,jdbcType=BIGINT}, #{classGrade.id,jdbcType=BIGINT}, #{status.id,jdbcType=BIGINT},
+			#{trackState,jdbcType=BIT}, #{remark,jdbcType=VARCHAR}, #{education.id,jdbcType=BIGINT}
+			, #{subject.id,jdbcType=BIGINT}, #{email}, #{formBuildDate}, #{weChat}, #{inputTime},
+			                                                             #{address}, #{major}, #{source.id},
+			                                                             #{clientType.id}, #{focusProblem}, #{hasPaid},
+			                                                             #{introducerStu.id}, #{introducer},
+			    #{communicationMethod.id}, #{enrollUniversityDate}, #{tracePurpose.id}, #{consultationTime}, #{summary},
+			    #{communicationContext}, #{bigCustomer.id}, #{sn})
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="cn.wolfcode.crm.domain.PotentitalStudent">
+		UPDATE `potentitalstudent`
+		SET age                    = #{age,jdbcType=INTEGER},
+			gender                 = #{gender,jdbcType=BIT},
+			name                   = #{name,jdbcType=VARCHAR},
+			sale_id                = #{employee.id,jdbcType=BIGINT},
+			track_times            = #{trackTimes,jdbcType=INTEGER},
+			prevDate               = #{prevDate,jdbcType=TIMESTAMP},
+			visitDate              = #{visitDate,jdbcType=TIMESTAMP},
+			nextDate               = #{nextDate,jdbcType=TIMESTAMP},
+			QQ                     = #{qq,jdbcType=VARCHAR},
+			tel                    = #{tel,jdbcType=VARCHAR},
+			school                 = #{school,jdbcType=VARCHAR},
+			intention              = #{intention.id,jdbcType=BIGINT},
+			campus_id              = #{campus.id,jdbcType=BIGINT},
+			class_id               = #{classGrade.id,jdbcType=BIGINT},
+			status                 = #{status.id,jdbcType=BIGINT},
+			track_state            = #{trackState,jdbcType=BIT},
+			remark                 = #{remark,jdbcType=VARCHAR},
+			education              = #{education.id,jdbcType=BIGINT},
+			subject_id             = #{subject.id},
+			email                  = #{email},
+			formBuildDate          = #{formBuildDate},
+			weChat                 = #{weChat},
+			inputTime              = #{inputTime},
+			address                = #{address},
+			major                  = #{major},
+			source_id              = #{source.id},
+			clientType_id          = #{clientType.id},
+			focusProblem           = #{focusProblem},
+			hasPaid                = #{hasPaid},
+			introducerStu_id       = #{introducerStu.id},
+			introducer             = #{introducer},
+			communicationMethod_id = #{communicationMethod.id},
+			enrollUniversityDate   = #{enrollUniversityDate},
+			tracePurpose_id        = #{tracePurpose.id},
+			consultationTime       = #{consultationTime},
+			summary                = #{summary},
+			communicationContext   = #{communicationContext},
+			bigCustomer_id         = #{bigCustomer.id},
+			sn                     = #{sn}
+		WHERE id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updatebaseInfoByPrimaryKey">
+		UPDATE `potentitalstudent`
+		SET age           = #{age},
+			gender        = #{gender},
+			name          = #{name},
+			QQ            = #{qq},
+			tel           = #{tel},
+			email         = #{email},
+			school        = #{school},
+			campus_id     = #{campus.id},
+			education     = #{education.id},
+			address       = #{address},
+			major         = #{major},
+			source_id     = #{source.id},
+			clientType_id = #{clientType.id}
+		WHERE id = #{id}
+	</update>
+
+	<select id="selectByPrimaryKey" resultMap="base1" parameterType="java.lang.Long">
+		SELECT
+			ps.id,
+			ps.age,
+			ps.gender,
+			ps.name,
+			ps.sale_id,
+			ps.track_times,
+			ps.prevDate,
+			ps.visitDate,
+			ps.nextDate,
+			ps.sn,
+			ps.QQ,
+			ps.tel,
+			ps.school,
+			ps.intention,
+			ps.campus_id,
+			ps.class_id,
+			ps.status,
+			ps.track_state,
+			ps.remark,
+			ps.education,
+			ps.subject_id,
+			ps.email,
+			ps.formBuildDate,
+			ps.weChat,
+			ps.inputTime,
+			ps.address,
+			ps.major,
+			ps.source_id,
+			ps.clientType_id,
+			ps.focusProblem,
+			ps.hasPaid,
+			ps.introducer,
+			ps.enrollUniversityDate,
+			ps.communicationMethod_id,
+			ps.tracePurpose_id,
+			ps.consultationTime,
+			ps.summary,
+			ps.communicationContext,
+			ps.bigCustomer_id,
+			ps1.id   ps1_id,
+			ps1.name ps1_name
+		FROM `potentitalstudent` ps
+			LEFT JOIN potentitalStudent ps1
+				ON ps1.id = ps.introducerStu_id
+		WHERE ps.id = #{id,jdbcType=BIGINT}
+	</select>
+	<select id="selectAll" resultMap="base2">
+		SELECT
+			ps.id,
+			ps.age,
+			ps.email,
+			ps.gender,
+			ps.name,
+			e.id                          e_id,
+			e.username                    e_username,
+			ps.sn,
+			ps.track_times,
+			ps.prevDate,
+			ps.visitDate,
+			ps.nextDate,
+			ps.formBuildDate,
+			ps.introducer,
+			ps.QQ,
+			ps.tel,
+			ps.school,
+			ps.weChat,
+			ps.inputTime,
+			ps.address,
+			ps.major,
+			ps.hasPaid,
+			ps.consultationTime,
+			ps.summary,
+			ps.communicationContext,
+			source.id                     source_id,
+			source.parent_id              source_parent_id,
+			source.name                   source_name,
+			source.intro                  source_intro,
+			clientType.id                 clientType_id,
+			clientType.parent_id          clientType_parent_id,
+			clientType.name               clientType_name,
+			clientType.intro              clientType_intro,
+			intention.id                  intention_id,
+			intention.parent_id           intention_parent_id,
+			intention.name                intention_name,
+			intention.intro               intention_intro,
+			campus.id                     campus_id,
+			campus.parent_id              campus_parent_id,
+			campus.name                   campus_name,
+			campus.intro                  campus_intro,
+			cg.id                         cg_id,
+			cg.name                       cg_name,
+			status.id                     status_id,
+			status.parent_id              status_parent_id,
+			status.name                   status_name,
+			status.intro                  status_intro,
+			ps.track_state,
+			ps.remark,
+			education.id                  education_id,
+			education.parent_id           education_parent_id,
+			education.name                education_name,
+			education.intro               education_intro,
+			subject.id                    subject_id,
+			subject.parent_id             subject_parent_id,
+			subject.name                  subject_name,
+			subject.intro                 subject_intro,
+			ps1.id                        ps1_id,
+			ps1.name                      ps1_name,
+			ps.enrollUniversityDate,
+			ps.focusProblem,
+			communicationMethod.id        cm_id,
+			communicationMethod.name      cm_name,
+			communicationMethod.parent_id cm_parent_id,
+			communicationMethod.intro     cm_intro,
+			tracePurpose.id               tracePurpose_id,
+			tracePurpose.parent_id        tracePurpose_parent_id,
+			tracePurpose.name             tracePurpose_name,
+			tracePurpose.intro            tracePurpose_intro,
+			bc.id                         bc_id,
+			bc.name                       bc_name,
+			ps1.id                        ps1_id,
+			ps1.name                      ps1_name
+		FROM `potentitalstudent` ps
+			LEFT JOIN employee e
+				ON e.id = ps.sale_id
+			LEFT JOIN classgrade cg
+				ON cg.id = ps.class_id
+			LEFT JOIN systemdictionaryitem intention
+				ON intention.id = ps.intention
+			LEFT JOIN systemdictionaryitem campus
+				ON campus.id = ps.campus_id
+			LEFT JOIN systemdictionaryitem status
+				ON status.id = ps.status
+			LEFT JOIN systemdictionaryitem education
+				ON education.id = ps.education
+			LEFT JOIN systemdictionaryitem subject
+				ON subject.id = ps.subject_id
+			LEFT JOIN systemdictionaryitem source
+				ON source.id = ps.source_id
+			LEFT JOIN systemdictionaryitem clientType
+				ON clientType.id = ps.clientType_id
+			LEFT JOIN systemdictionaryitem tracePurpose
+				ON tracePurpose.id = ps.tracePurpose_id
+			LEFT JOIN systemdictionaryitem communicationMethod
+				ON communicationMethod.id = ps.communicationMethod_id
+			LEFT JOIN universitytrace bc
+				ON bc.id = ps.bigCustomer_id
+			LEFT JOIN potentitalStudent ps1
+				ON ps1.id = ps.introducerStu_id
+	</select>
+	<select id="queryForList" resultMap="base2">
+		select ps.id, ps.age,ps.email, ps.gender, ps.name,e.id e_id,e.username e_username,ps.sn,
+		ps.track_times, ps.prevDate, ps.visitDate, ps.nextDate,ps.formBuildDate,ps.introducer,
+		ps.QQ, ps.tel,
+		ps.school,ps.weChat,ps.inputTime,ps.address,ps.major,ps.hasPaid,ps.consultationTime,ps.summary,ps.communicationContext,
+		source.id source_id,source.parent_id source_parent_id,source.name source_name,source.intro source_intro,
+		clientType.id clientType_id,clientType.parent_id clientType_parent_id,clientType.name
+		clientType_name,clientType.intro clientType_intro,
+		intention.id intention_id,intention.parent_id intention_parent_id,intention.name intention_name,intention.intro
+		intention_intro,
+		campus.id campus_id,campus.parent_id campus_parent_id, campus.name campus_name,campus.intro campus_intro ,cg.id
+		cg_id,cg.name cg_name,
+		status.id status_id,status.parent_id status_parent_id,status.name status_name,status.intro status_intro,
+		ps.track_state, ps.remark,
+		education.id education_id,education.parent_id education_parent_id,education.name education_name,education.intro
+		education_intro
+		,subject.id subject_id,subject.parent_id subject_parent_id,subject.name subject_name,subject.intro
+		subject_intro,
+		ps1.id ps1_id,ps1.name ps1_name,ps.enrollUniversityDate,ps.focusProblem,
+		communicationMethod.id cm_id,communicationMethod.name cm_name,communicationMethod.parent_id
+		cm_parent_id,communicationMethod.intro cm_intro,
+		tracePurpose.id tracePurpose_id,tracePurpose.parent_id tracePurpose_parent_id,tracePurpose.name
+		tracePurpose_name,tracePurpose.intro tracePurpose_intro
+		,bc.id bc_id,bc.name bc_name,ps1.id ps1_id,ps1.name ps1_name
+		from `potentitalstudent` ps
+		LEFT JOIN employee e ON e.id=ps.sale_id
+		LEFT JOIN classgrade cg ON cg.id=ps.class_id
+		LEFT JOIN systemdictionaryitem intention ON intention.id=ps.intention
+		LEFT JOIN systemdictionaryitem campus ON campus.id=ps.campus_id
+		LEFT JOIN systemdictionaryitem status ON status.id=ps.status
+		LEFT JOIN systemdictionaryitem education ON education.id=ps.education
+		LEFT JOIN systemdictionaryitem subject ON subject.id=ps.subject_id
+		LEFT JOIN systemdictionaryitem source ON source.id=ps.source_id
+		LEFT JOIN universitytrace bc ON bc.id=ps.bigCustomer_id
+		LEFT JOIN systemdictionaryitem tracePurpose ON tracePurpose.id=ps.tracePurpose_id
+		LEFT JOIN systemdictionaryitem clientType ON clientType.id=ps.clientType_id
+		LEFT JOIN systemdictionaryitem communicationMethod ON communicationMethod.id=ps.communicationMethod_id
+		LEFT JOIN potentitalStudent ps1 ON ps1.id=ps.introducerStu_id
+		<include refid="refid"></include>
+		LIMIT #{beginIndex},#{rows}
+	</select>
+	<select id="queryForCount" resultType="java.lang.Integer">
+		select count(ps.id)
+		from `potentitalstudent` ps
+		LEFT JOIN employee e ON e.id=ps.sale_id
+		LEFT JOIN classgrade cg ON cg.id=ps.class_id
+		LEFT JOIN systemdictionaryitem intention ON intention.id=ps.intention
+		LEFT JOIN systemdictionaryitem campus ON campus.id=ps.campus_id
+		LEFT JOIN systemdictionaryitem status ON status.id=ps.status
+		LEFT JOIN systemdictionaryitem education ON education.id=ps.education
+		LEFT JOIN systemdictionaryitem subject ON subject.id=ps.subject_id
+		LEFT JOIN systemdictionaryitem source ON source.id=ps.source_id
+		LEFT JOIN universitytrace bc ON bc.id=ps.bigCustomer_id
+		LEFT JOIN systemdictionaryitem clientType ON clientType.id=ps.clientType_id
+		LEFT JOIN systemdictionaryitem tracePurpose ON tracePurpose.id=ps.tracePurpose_id
+		LEFT JOIN potentitalStudent ps1 ON ps1.id=ps.introducerStu_id
+		LEFT JOIN systemdictionaryitem communicationMethod ON communicationMethod.id=ps.communicationMethod_id
+		<include refid="refid"></include>
+		LIMIT #{beginIndex},#{rows}
+	</select>
+	<sql id="refid">
+		<where>
+			<if test="name!=null and name !=''">
+				and ps.name like concat('%', #{name}, '%')
+			</if>
+			<if test="minAge!=null and minAge!=''">
+				and ps.age>=#{minAge}
+			</if>
+			<if test="maxAge!=null and maxAge !=''">
+				and ps.age &lt;=#{maxAge}
+			</if>
+			<if test="gender!=null and name !=''">
+				and ps.gender=#{gender}
+			</if>
+			<if test="educationId!=null and educationId !=''">
+				and education.id=#{educationId}
+			</if>
+			<if test="intentionId!=null and intentionId !=''">
+				and intention.id=#{intentionId}
+			</if>
+			<if test="stateId!=null and stateId !=''">
+				and status.id =#{stateId}
+			</if>
+			<if test="classGradeId!=null and classGradeId !=''">
+				and cg.id=#{classGradeId}
+			</if>
+			<if test="campusId!=null and campusId !=''">
+				and campus.id=#{campusId}
+			</if>
+			<if test="intentionSubjectId!=null and intentionSubjectId !=''">
+				and subject.id=#{intentionSubjectId}
+			</if>
+
+    </where>
+    </sql>
+
+
+    <update id="track" parameterType="cn.wolfcode.crm.domain.PotentitalStudent" >
+        update `potentitalstudent`
+        set
+        name = #{name,jdbcType=VARCHAR},
+        sale_id = #{employee.id,jdbcType=BIGINT},
+        track_times = #{trackTimes,jdbcType=INTEGER},
+        prevDate = #{prevDate,jdbcType=TIMESTAMP},
+        visitDate = #{visitDate,jdbcType=TIMESTAMP},
+        nextDate = #{nextDate,jdbcType=TIMESTAMP},
+        QQ = #{qq,jdbcType=VARCHAR},
+        tel = #{tel,jdbcType=VARCHAR},
+        school = #{school,jdbcType=VARCHAR},
+        intention = #{intention.id,jdbcType=BIGINT},
+        class_id = #{classGrade.id,jdbcType=BIGINT},
+        email=#{email},
+        status=#{status.id},
+          track_State=true,
+        tracePurpose_id=#{tracePurpose.id},
+        consultationTime=#{consultationTime},
+        summary=#{summary},
+        communicationContext=#{communicationContext}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectName" resultType="string">
+        SELECT name FROM potentitalstudent
+    </select>
+    <update id="changeEmployee">
+        UPDATE potentitalstudent set  sale_id =0 where id=#{id}
+    </update>
+    <update id="change2official">
+        UPDATE potentitalstudent set  status = 60 where id=#{id}
+    </update>
+    <insert id="insertPotentitalCustomerPool" parameterType="cn.wolfcode.crm.domain.PotentitalCustomerPool" useGeneratedKeys="true" keyProperty="id" >
+        insert into `potentitalstudent` (age, gender, name,
+        sale_id, track_times, prevDate,
+        visitDate, nextDate, QQ,
+        tel, school, intention,
+        campus_id, class_id, status,
+        track_state, remark, education,subject_id,email,formBuildDate,weChat,inputTime,
+        address,major,source_id,clientType_id,focusProblem,hasPaid,introducerStu_id,introducer,communicationMethod_id,enrollUniversityDate
+        ,tracePurpose_id,consultationTime,summary,communicationContext,bigCustomer_id,sn
+        )
+        values (#{age,jdbcType=INTEGER}, #{gender,jdbcType=BIT}, #{name,jdbcType=VARCHAR},
+        #{employee.id,jdbcType=BIGINT}, #{trackTimes,jdbcType=INTEGER}, #{prevDate,jdbcType=TIMESTAMP},
+        #{visitDate,jdbcType=TIMESTAMP}, #{nextDate,jdbcType=TIMESTAMP}, #{qq,jdbcType=VARCHAR},
+        #{tel,jdbcType=VARCHAR}, #{school,jdbcType=VARCHAR}, #{intention.id,jdbcType=BIGINT},
+        #{campus.id,jdbcType=BIGINT}, #{classGrade.id,jdbcType=BIGINT}, #{status.id,jdbcType=BIGINT},
+        #{trackState,jdbcType=BIT}, #{remark,jdbcType=VARCHAR}, #{education.id,jdbcType=BIGINT}
+        ,#{subject.id,jdbcType=BIGINT},#{email},#{formBuildDate},#{weChat},#{inputTime},
+        #{address},#{major},#{source.id},#{clientType.id},#{focusProblem},#{hasPaid},#{introducerStu.id},#{introducer},
+        #{communicationMethod.id},#{enrollUniversityDate},#{tracePurpose.id},#{consultationTime},#{summary},#{communicationContext},#{bigCustomer.id},#{sn})
+    </insert>
+
+    <insert id="insertTrackStudent" parameterType="cn.wolfcode.crm.domain.PotentitalStudent" useGeneratedKeys="true" keyProperty="id" >
+        insert into `trackstudent` (age, gender, name,
+        sale_id, track_times, prevDate,
+        visitDate, nextDate, QQ,
+        tel, school, intention,
+        campus_id, class_id, status,
+        track_state, remark, education,subject_id,email,formBuildDate,weChat,inputTime,
+        address,major,source_id,clientType_id,focusProblem,hasPaid,introducerStu_id,introducer,communicationMethod_id,enrollUniversityDate
+        ,tracePurpose_id,consultationTime,summary,communicationContext,bigCustomer_id,auditResult,auditContext,score_id
+        )
+        values (#{age,jdbcType=INTEGER}, #{gender,jdbcType=BIT}, #{name,jdbcType=VARCHAR},
+        #{employee.id,jdbcType=BIGINT}, #{trackTimes,jdbcType=INTEGER}, #{prevDate,jdbcType=TIMESTAMP},
+        #{visitDate,jdbcType=TIMESTAMP}, #{nextDate,jdbcType=TIMESTAMP}, #{qq,jdbcType=VARCHAR},
+        #{tel,jdbcType=VARCHAR}, #{school,jdbcType=VARCHAR}, #{intention.id,jdbcType=BIGINT},
+        #{campus.id,jdbcType=BIGINT}, #{classGrade.id,jdbcType=BIGINT}, #{status.id,jdbcType=BIGINT},
+        #{trackState,jdbcType=BIT}, #{remark,jdbcType=VARCHAR}, #{education.id,jdbcType=BIGINT}
+        ,#{subject.id,jdbcType=BIGINT},#{email},#{formBuildDate},#{weChat},#{inputTime},
+        #{address},#{major},#{source.id},#{clientType.id},#{focusProblem},#{hasPaid},#{introducerStu.id},#{introducer},
+        #{communicationMethod.id},#{enrollUniversityDate},#{tracePurpose.id},#{consultationTime},#{summary},#{communicationContext},#{bigCustomer.id},
+        false,null,null)
+    </insert>
+    <select id="selectAllSn" resultType="map">
+        select sn,name
+        FROM potentitalstudent
+    </select>
+
+</mapper>

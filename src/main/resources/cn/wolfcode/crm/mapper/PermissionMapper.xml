@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.PermissionMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.Permission">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="resource" property="resource"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from `permission`
+    where id = #{id}
+  </delete>
+    <!--权限保存-->
+    <insert id="insert" keyColumn="id" useGeneratedKeys="true" keyProperty="id">
+    insert into permission(name,resource) values (#{name},#{resource})
+  </insert>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select id, name, resource
+    from `permission`
+  </select>
+    <select id="getPermissionKey" resultMap="BaseResultMap">
+        select *
+        from `permission` where id=#{id}
+    </select>
+    <!--分页-->
+    <!--查询满足条件总数-->
+    <select id="queryForCount" resultType="int">
+    select count(id) from `permission`
+  </select>
+    <!--查询满足条件的结果集(有内联sql查询部门信息)-->
+    <select id="queryForList" resultMap="BaseResultMap">
+    select id, name, resource
+    from `permission`
+    limit #{beginIndex},#{rows}
+  </select>
+    <!--根据角色id查询权限的信息-->
+    <select id="getPermissionByRoleId" resultMap="BaseResultMap">
+      select p.id,p.name,p.resource
+      from permission p left join role_permission rp on p.id = rp.permission_id
+      where rp.role_id=#{roleId}
+  </select>
+    <!--查询权限-->
+    <select id="getAllResource" resultType="string">
+     select resource
+    from `permission`
+  </select>
+    <!--根据员工id查询权限信息-->
+    <select id="getPermissionByEmpId" resultType="string">
+        SELECT p.resource
+        FROM permission p
+        LEFT JOIN role_permission rp ON p.id=rp.permission_id
+        LEFT JOIN employee_role er ON er.role_id=rp.role_id
+        WHERE er.employee_id=#{empId}
+    </select>
+</mapper>

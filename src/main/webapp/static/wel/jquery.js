@@ -1,0 +1,3 @@
+(function($){var isScaled=false;function processDatapoints(plot,series,datapoints){if(window.devicePixelRatio&&!isScaled){var placeholder=plot.getPlaceholder();placeholder.children('canvas').each(function(index,canvas){var context=canvas.getContext('2d');var width=$(canvas).attr('width');var height=$(canvas).attr('height');$(canvas).attr('width',width*window.devicePixelRatio);$(canvas).attr('height',height*window.devicePixelRatio);$(canvas).css('width',width+'px');$(canvas).css('height',height+'px');context.scale(window.devicePixelRatio,window.devicePixelRatio);isScaled=true;});}}
+function init(plot){plot.hooks.processDatapoints.push(processDatapoints);}
+$(window).load(function(){$.plot.plugins.push({init:init,name:"retina",version:"0.1"});});})(jQuery);

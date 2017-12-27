@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.PayrollMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.Payroll">
+        <id column="id" property="id"/>
+        <result column="reword" property="reword"/>
+        <result column="month" property="month"/>
+        <result column="salary" property="salary"/>
+        <result column="basicSalary" property="basicSalary"/>
+        <result column="workDay" property="workDay"/>
+        <result column="afterDay" property="afterDay"/>
+        <result column="befterDay" property="befterDay"/>
+        <result column="actualWorkDay" property="actualWorkDay"/>
+        <result column="endSalary" property="endSalary"/>
+        <result column="payTime" property="payTime"/>
+        <!--内联查询员工信息-->
+        <association property="employee" javaType="Employee" columnPrefix="e_">
+            <id column="id" property="id"/>
+            <result column="username" property="username"/>
+        </association>
+        <!--内联查询部门信息-->
+        <association property="department" javaType="Department" columnPrefix="d_">
+            <id column="id" property="id"/>
+            <result column="name" property="name"/>
+        </association>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from `payroll`
+    where id = #{id}
+  </delete>
+    <insert id="insert" parameterType="cn.wolfcode.crm.domain.Payroll" useGeneratedKeys="true" keyProperty="id">
+    insert into `payroll` (basicSalary,reword, department_id, month, salary, workDay, afterDay, befterDay,
+      actualWorkDay, endSalary, payTime, employee_id)
+    values (#{basicSalary},#{reword}, #{department.id}, #{month}, #{salary}, #{workDay}, #{afterDay}, #{befterDay},
+      #{actualWorkDay}, #{endSalary}, #{payTime}, #{employee.id})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.crm.domain.Payroll">
+    update `payroll`
+    set reword = #{reword},
+      month = #{month},
+      basicSalary = #{basicSalary},
+      workDay = #{workDay},
+      afterDay = #{afterDay},
+      befterDay = #{befterDay}
+    where employee_id = #{employee.id}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select id, basicSalary, reword, department_id, month, salary, workDay, afterDay, befterDay, actualWorkDay,
+    endSalary, payTime, employee_id
+    from `payroll`
+    where id = #{id}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select p.id,p.basicSalary ,p.reword, p.month, p.salary, p.workDay,
+        p.afterDay, p.befterDay, p.actualWorkDay,p.endSalary, p.payTime,
+        e.id e_id,e.username e_username,
+        d.id d_id,d.name d_name
+        from payroll p LEFT JOIN employee e ON p.employee_id=e.id
+        LEFT JOIN department d ON e.dept_id=d.id
+  </select>
+    <!--高级查询共同的sql-->
+    <sql id="BaseSql">
+        <where>
+            <if test="keyword!=null and keyword!=''">
+                and e.username LIKE concat('%',#{keyword},'%')
+            </if>
+            <if test="minSalary!=null">
+                and p.endSalary &gt;=#{minSalary}
+            </if>
+            <if test="maxSalary!=null">
+                and p.endSalary &lt;=#{maxSalary}
+            </if>
+            <if test="date!=null">
+                and p.month &gt;=#{date}
+            </if>
+            <if test="date!=null">
+                and p.month &lt;=#{lastMonthDate}
+            </if>
+            <if test="deptId>0">
+                and d.id = #{deptId}
+            </if>
+        </where>
+    </sql>
+    <!--分页-->
+    <!--查询满足条件总数-->
+    <select id="queryForCount" resultType="int">
+        select count(p.id)
+        from payroll p LEFT JOIN employee e ON p.employee_id=e.id
+        LEFT JOIN department d ON e.dept_id=d.id
+        <include refid="BaseSql"/>
+    </select>
+    <!--查询满足条件的结果集(有内联sql查询员工信息)-->
+    <select id="queryForList" resultMap="BaseResultMap">
+        select p.id,p.basicSalary ,p.reword, p.month, p.salary, p.workDay,
+        p.afterDay, p.befterDay, p.actualWorkDay,p.endSalary, p.payTime,
+        e.id e_id,e.username e_username,
+
+        d.id d_id,d.name d_name
+        from payroll p LEFT JOIN employee e ON p.employee_id=e.id
+
+        LEFT JOIN department d ON e.dept_id=d.id
+
+        <include refid="BaseSql"/>
+        <if test="orderBy!=null and orderBy!=''">
+           order by p.endSalary ${orderBy}
+        </if>
+        limit #{beginIndex},#{rows}
+    </select>
+    <!--进行某个员工的核算操作-->
+    <update id="checkAccount">
+    update `payroll` set payTime = #{payTime},salary = #{salary},actualWorkDay = #{actualWorkDay},endSalary = #{endSalary}
+    where employee_id = #{employee.id}
+  </update>
+</mapper>

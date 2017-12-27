@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.ChangeClassMapper">
+	<resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.ChangeClass">
+		<id column="id" property="id"/>
+		<association property="officialStudent" javaType="OfficialStudent"
+		             column="official_id"
+		             select="cn.wolfcode.crm.mapper.OfficialStudentMapper.selectByPrimaryKey"/>
+		<association property="afterClass" javaType="ClassGrade" column="afterClass_id"
+		             select="cn.wolfcode.crm.mapper.ClassGradeMapper.selectByPrimaryKey"/>
+	</resultMap>
+
+
+	<resultMap id="baseJoinMap" type="ChangeClass">
+		<id property="id" column="cc_id"/>
+		<result property="beforeClass" column="cc_beforeClass"/>
+		<result property="changeDate" column="cc_changeDate"/>
+		<result property="auditStatus" column="cc_auditStatus"/>
+		<association property="afterClass" javaType="ClassGrade" column="cc_afterClassId"
+		             select="cn.wolfcode.crm.mapper.ClassGradeMapper.selectByPrimaryKey">
+		</association>
+		<association property="officialStudent" javaType="OfficialStudent">
+			<id property="id" column="os_id"/>
+			<result property="enrolTime" column="os_enrolTime"/>
+		</association>
+		<association property="officialStudent.payment" javaType="Payment" columnPrefix="p_">
+			<id property="id" column="id"/>
+			<result property="totalFee" column="totalFee"/>
+			<result property="fee2pay" column="fee2pay"/>
+			<result property="paidStatus" column="paidStatus"/>
+			<result property="paidupFee" column="paidupFee"/>
+		</association>
+		<association property="officialStudent.potentitalStudent" javaType="PotentitalStudent">
+			<id column="id" property="id" jdbcType="BIGINT"/>
+			<result column="age" property="age" jdbcType="INTEGER"/>
+			<result column="gender" property="gender" jdbcType="BIT"/>
+			<result column="name" property="name" jdbcType="VARCHAR"/>
+			<result column="track_times" property="trackTimes" jdbcType="INTEGER"/>
+			<result column="prevDate" property="prevDate" jdbcType="TIMESTAMP"/>
+			<result column="visitDate" property="visitDate" jdbcType="TIMESTAMP"/>
+			<result column="nextDate" property="nextDate" jdbcType="TIMESTAMP"/>
+			<result column="QQ" property="qq" jdbcType="VARCHAR"/>
+			<result column="tel" property="tel" jdbcType="VARCHAR"/>
+			<result column="school" property="school" jdbcType="VARCHAR"/>
+			<result column="track_state" property="trackState" jdbcType="BIT"/>
+			<result column="remark" property="remark" jdbcType="VARCHAR"/>
+			<result column="email" property="email" jdbcType="VARCHAR"/>
+			<result column="weChat" property="weChat" jdbcType="VARCHAR"/>
+			<result column="formBuildDate" property="formBuildDate"/>
+			<result column="inputTime" property="inputTime"/>
+			<result column="address" property="address"/>
+			<result column="major" property="major"/>
+			<result column="focusProblem" property="focusProblem"/>
+			<result column="hasPaid" property="hasPaid"/>
+			<result column="introducer" property="introducer"/>
+			<result column="communicationContext" property="communicationContext"/>
+			<result column="consultationTime" property="consultationTime"/>
+			<result column="summary" property="summary"/>
+			<result column="sn" property="sn"/>
+			<result column="enrollUniversityDate" property="enrollUniversityDate"/>
+		</association>
+		<association property="officialStudent.potentitalStudent.classGrade"
+		             javaType="cn.wolfcode.crm.domain.ClassGrade"
+		             columnPrefix="cg_">
+			<id property="id" column="id"/>
+			<result property="name" column="name"/>
+		</association>
+		<association property="officialStudent.potentitalStudent.employee" javaType="cn.wolfcode.crm.domain.Employee"
+		             columnPrefix="e_">
+			<id property="id" column="id"/>
+			<result property="username" column="username"/>
+		</association>
+		<association property="officialStudent.potentitalStudent.campus"
+		             javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             columnPrefix="campus_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+		<association property="officialStudent.potentitalStudent.education"
+		             javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             columnPrefix="education_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+		<association property="officialStudent.potentitalStudent.subject"
+		             javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             columnPrefix="subject_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+		<association property="officialStudent.potentitalStudent.source"
+		             javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             columnPrefix="source_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+		<association property="officialStudent.potentitalStudent.clientType"
+		             javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             columnPrefix="clientType_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+	</resultMap>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		DELETE FROM `changeclass`
+		WHERE id = #{id}
+	</delete>
+	<insert id="insert" parameterType="cn.wolfcode.crm.domain.ChangeClass" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `changeclass` (official_id, afterClass_id, beforeClass, auditStatus, changeDate)
+		VALUES (#{id}, #{afterClassId}, #{beforeClass}, 0, now())
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="cn.wolfcode.crm.domain.ChangeClass">
+		UPDATE `changeclass`
+		SET
+			afterClass_id = #{afterClass.id},
+			changeDate    = #{changeDate}
+		WHERE id = #{id}
+	</update>
+	<update id="audit">
+		UPDATE `changeclass`
+		SET
+			auditStatus = 1
+		WHERE id = #{id}
+	</update>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		SELECT
+			id,
+			official_id,
+			afterClass_id,
+			changeDate,
+			auditStatus,
+			beforeClass
+		FROM `changeclass`
+		WHERE id = #{id}
+	</select>
+	<select id="selectAll" resultMap="BaseResultMap">
+		SELECT
+			id,
+			official_id,
+			afterClass_id,
+			changeDate,
+			auditStatus,
+			beforeClass
+		FROM `changeclass`
+	</select>
+
+	<!--分页-->
+	<!--查询满足条件总数-->
+	<select id="queryForCount" resultType="java.lang.Integer">
+		SELECT count(cc.id) FROM changeclass cc LEFT JOIN officialstudent os ON cc.official_id = os.id
+		LEFT JOIN `potentitalstudent` ps ON os.potential_id = ps.id
+		LEFT JOIN employee e ON e.id=ps.sale_id
+		LEFT JOIN classgrade cg ON cg.id=ps.class_id
+		LEFT JOIN systemdictionaryitem campus ON campus.id=ps.campus_id
+		LEFT JOIN systemdictionaryitem education ON education.id=ps.education
+		LEFT JOIN systemdictionaryitem subject ON subject.id=ps.subject_id
+		LEFT JOIN systemdictionaryitem source ON source.id=ps.source_id
+		LEFT JOIN systemdictionaryitem clientType ON clientType.id=ps.clientType_id
+		<include refid="baseSql"/>
+	</select>
+	<!--查询满足条件的结果集(有内联sql查询部门信息)-->
+	<select id="queryForList" resultMap="baseJoinMap">
+		SELECT
+		cc.id cc_id,
+		cc.official_id cc_officialId,
+		cc.afterClass_id cc_afterClassId,
+		cc.changeDate cc_changeDate,
+		cc.auditStatus cc_auditStatus,
+		cc.beforeClass cc_beforeClass,
+		p.fee2pay p_fee2pay,
+		p.totalFee p_totalFee,
+		p.paidStatus p_paidStatus,
+		p.paidupFee p_paidupFee,
+		os.id os_id,os.enrolTime os_enrolTime,os.status_id os_statusId, ps.id, ps.age,ps.email, ps.gender,
+		ps.name,e.id
+		e_id,e.username e_username,ps.sn,
+		ps.track_times, ps.prevDate, ps.visitDate, ps.nextDate,ps.formBuildDate,ps.introducer,
+		ps.QQ, ps.tel,
+		ps.school,ps.weChat,ps.inputTime,ps.address,ps.major,ps.hasPaid,ps.consultationTime,ps.summary,ps.communicationContext,
+		source.id source_id,source.parent_id source_parent_id,source.name source_name,source.intro source_intro,
+		clientType.id clientType_id,clientType.parent_id clientType_parent_id,clientType.name
+		clientType_name,clientType.intro clientType_intro,
+		campus.id campus_id,campus.parent_id campus_parent_id, campus.name campus_name,campus.intro campus_intro ,cg.id
+		cg_id,cg.name cg_name,
+		ps.remark,
+		education.id education_id,education.parent_id education_parent_id,education.name education_name,education.intro
+		education_intro,subject.id subject_id,subject.parent_id subject_parent_id,subject.name
+		subject_name,subject.intro
+		subject_intro
+		FROM changeclass cc LEFT JOIN officialstudent os ON cc.official_id = os.id
+		LEFT JOIN payment p ON p.official_id = os.id
+		LEFT JOIN `potentitalstudent` ps ON os.potential_id = ps.id
+		LEFT JOIN employee e ON e.id=ps.sale_id
+		LEFT JOIN classgrade cg ON cg.id=ps.class_id
+		LEFT JOIN systemdictionaryitem campus ON campus.id=ps.campus_id
+		LEFT JOIN systemdictionaryitem education ON education.id=ps.education
+		LEFT JOIN systemdictionaryitem subject ON subject.id=ps.subject_id
+		LEFT JOIN systemdictionaryitem source ON source.id=ps.source_id
+		LEFT JOIN systemdictionaryitem clientType ON clientType.id=ps.clientType_id
+		<include refid="baseSql"/>
+		LIMIT #{beginIndex},#{rows}
+	</select>
+
+	<sql id="baseSql">
+		<where>
+			<if test="keyword!=null and keyword!=''">
+				and (ps.name like concat('%', #{keyword}, '%')
+				or ps.tel like concat('%', #{keyword}, '%')
+				or e.username like concat('%', #{keyword}, '%'))
+			</if>
+			<if test="beginChangeDate!=null">
+				and cc.changeDate >= #{beginChangeDate}
+			</if>
+			<if test="endChangeDate!=null">
+				and cc.changeDate &lt;= #{endChangeDate}
+			</if>
+			<if test="classgradeId>0">
+				and cc.afterClass_id = #{classgradeId}
+			</if>
+		</where>
+	</sql>
+</mapper>

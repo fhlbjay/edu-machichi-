@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.RoleMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.Role">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="sn" property="sn"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from `role`
+    where id = #{id}
+  </delete>
+    <insert id="insert" parameterType="cn.wolfcode.crm.domain.Role" useGeneratedKeys="true" keyProperty="id">
+    insert into `role` (name, sn)
+    values (#{name}, #{sn})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.crm.domain.Role">
+    update `role`
+    set name = #{name},
+      sn = #{sn}
+    where id = #{id}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select id, name, sn
+    from `role`
+    where id = #{id}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select id, name, sn
+    from `role`
+  </select>
+    <!--分页-->
+    <!--查询满足条件总数-->
+    <select id="queryForCount" resultType="int">
+    select count(id) from `role`d
+  </select>
+    <!--查询满足条件的结果集(有内联sql查询部门信息)-->
+    <select id="queryForList" resultMap="BaseResultMap">
+    select id, name, sn
+    from `role`
+    limit #{beginIndex},#{rows}
+  </select>
+    <!--维护角色与权限的中间表关系-->
+    <insert id="insertRelation">
+    insert into `role_permission` (role_id, permission_id)
+    values (#{roleId}, #{perId})
+    </insert>
+    <!--使用循环的方法维护角色与权限的中间表关系-->
+    <insert id="batchInsertRelation">
+        insert into `role_permission` (role_id, permission_id) values
+        <foreach collection="permissions" separator="," item="item">
+            (#{roleId}, #{item.id})
+        </foreach>
+    </insert>
+    <!--打破角色与权限的关系-->
+    <delete id="deleteRelation">
+       delete from `role_permission`
+       where role_id = #{roleId}
+    </delete>
+    <!--根据员工id查询角色名称-->
+    <select id="getRoleByEmpId" resultType="string">
+        select r.`name`
+        from role r LEFT JOIN employee_role er ON er.employee_id=r.id
+        WHERE er.employee_id=#{empId}
+    </select>
+</mapper>

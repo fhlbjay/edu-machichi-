@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.WastageStudentMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.WastageStudent">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="tel" property="tel"/>
+        <result column="reason" property="reason"/>
+        <result column="refundState" property="refundState"/>
+        <result column="wastageDate" property="wastageDate"/>
+        <result column="studyDaysNum" property="studyDaysNum"/>
+        <result column="auditState" property="auditState"/>
+        <result column="studentId" property="studentId"/>
+        <result column="refundMoney" property="refundMoney"/>
+        <result column="enrolTime" property="enrolTime"/>
+        <association property="saleman" javaType="Employee" columnPrefix="saleman_">
+            <id column="id" property="id"/>
+            <result column="username" property="username"/>
+        </association>
+        <association property="classgrade" javaType="ClassGrade" columnPrefix="cg_">
+            <id column="id" property="id"/>
+            <result column="name" property="name"/>
+        </association>
+        <association property="operator" javaType="Employee" columnPrefix="operator_">
+            <id column="id" property="id"/>
+            <result column="username" property="username"/>
+        </association>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM `wastage`
+        WHERE id = #{id}
+    </delete>
+    <insert id="insert" parameterType="cn.wolfcode.crm.domain.WastageStudent" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `wastage` (name, tel, salemanId, reason, refundState, classgradeId,
+                               wastageDate, studyDaysNum, auditState, operatorId, studentId,enrolTime)
+        VALUES (#{name}, #{tel}, #{saleman.id}, #{reason}, #{refundState}, #{classgrade.id},
+                         #{wastageDate}, #{studyDaysNum}, #{auditState}, #{operator.id}, #{studentId},#{enrolTime})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.crm.domain.WastageStudent">
+        UPDATE `wastage`
+        SET name         = #{name},
+            tel          = #{tel},
+            reason       = #{reason},
+            refundState  = #{refundState},
+            wastageDate  = #{wastageDate},
+            studyDaysNum = #{studyDaysNum},
+            auditState   = #{auditState},
+            enrolTime = #{enrolTime}
+        WHERE id = #{id}
+    </update>
+
+    <update id="changeState">
+        UPDATE `wastage`
+        SET operatorId = #{operator.id},
+            auditState = #{auditState}
+        where id = #{id}
+    </update>
+    <!--退款-->
+    <update id="refund">
+        UPDATE `wastage`
+        SET refundState = #{refundState},
+            refundMoney = #{refundMoney}
+        where id = #{id}
+    </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        SELECT
+            w.id,
+            w.name,
+            w.tel,
+            w.reason,
+            w.refundState,
+            w.wastageDate,
+            w.studyDaysNum,
+            w.auditState,
+            w.studentId,
+            w.refundMoney,
+            w.enrolTime,
+            saleman.id        saleman_id,
+            saleman.username  saleman_username,
+            operator.id       operator_id,
+            operator.username operator_username,
+            cg.id             cg_id,
+            cg.name           cg_name
+
+        FROM `wastage` w LEFT JOIN employee saleman ON w.salemanId = saleman.id
+            LEFT JOIN employee operator ON w.operatorId = operator.id
+            LEFT JOIN classgrade cg ON w.classgradeId = cg.id
+        WHERE w.id = #{id}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+            w.id,
+            w.name,
+            w.tel,
+            w.reason,
+            w.refundState,
+            w.wastageDate,
+            w.enrolTime,
+            w.studyDaysNum,
+            w.auditState,
+            w.studentId,
+            w.refundMoney,
+            w.auditState,
+            w.studentId,
+            saleman.id        saleman_id,
+            saleman.username  saleman_username,
+            operator.id       operator_id,
+            operator.username operator_username,
+            cg.id             cg_id,
+            cg.name           cg_name
+
+        FROM `wastage` w LEFT JOIN employee saleman ON w.salemanId = saleman.id
+            LEFT JOIN employee operator ON w.operatorId = operator.id
+            LEFT JOIN classgrade cg ON w.classgradeId = cg.id
+    </select>
+
+    <select id="queryForCount" resultType="java.lang.Integer">
+        SELECT count(w.id)
+        FROM `wastage` w LEFT JOIN employee saleman ON w.salemanId = saleman.id
+        LEFT JOIN employee operator ON w.operatorId = operator.id
+        LEFT JOIN classgrade cg ON w.classgradeId = cg.id
+        <include refid="baseSql"/>
+    </select>
+
+    <select id="queryForList" resultMap="BaseResultMap">
+        SELECT
+        w.id,
+        w.name,
+        w.tel,
+        w.reason,
+        w.refundState,
+        w.wastageDate,
+        w.enrolTime,
+        w.studyDaysNum,
+        w.auditState,
+        w.studentId,
+        w.auditState,
+        w.studentId,
+        w.refundMoney,
+        saleman.id        saleman_id,
+        saleman.username  saleman_username,
+        operator.id       operator_id,
+        operator.username operator_username,
+        cg.id             cg_id,
+        cg.name           cg_name
+        FROM `wastage` w LEFT JOIN employee saleman ON w.salemanId = saleman.id
+        LEFT JOIN employee operator ON w.operatorId = operator.id
+        LEFT JOIN classgrade cg ON w.classgradeId = cg.id
+        <include refid="baseSql"/>
+        LIMIT #{beginIndex},#{rows}
+    </select>
+
+    <!--高级查询共同的sql-->
+    <sql id="baseSql">
+        <where>
+            <if test="keyword!=null and keyword!=''">
+                and (w.name like concat('%',#{keyword},'%')
+                or w.tel like concat('%',#{keyword},'%'))
+            </if>
+            <if test="beginDate!=null">
+                and w.wastageDate >= #{beginDate}
+            </if>
+            <if test="endDate!=null">
+                and w.wastageDate &lt;= #{endDate}
+            </if>
+            <if test="classgradeId!=null and classgradeId>0">
+                and  cg.id = #{classgradeId}
+            </if>
+        </where>
+    </sql>
+</mapper>

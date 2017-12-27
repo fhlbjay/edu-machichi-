@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.StudentTrackMapper" >
+  <resultMap id="Base1" type="cn.wolfcode.crm.domain.StudentTrack" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="qq" property="qq" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="currentTime" property="currentTime" jdbcType="TIMESTAMP" />
+    <association property="prevEmployee" column="prevEmployee_id" javaType="cn.wolfcode.crm.domain.Employee"
+                 select="cn.wolfcode.crm.mapper.EmployeeMapper.selectByPrimaryKey">
+    </association>
+    <association property="nowEmployee" column="nowEmployee_id" javaType="cn.wolfcode.crm.domain.Employee"
+                 select="cn.wolfcode.crm.mapper.EmployeeMapper.selectByPrimaryKey">
+    </association>
+
+  </resultMap>
+  <resultMap id="Base2" type="cn.wolfcode.crm.domain.StudentTrack" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="qq" property="qq" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="currentTime" property="currentTime" jdbcType="TIMESTAMP" />
+   <association property="prevEmployee" javaType="cn.wolfcode.crm.domain.Employee" columnPrefix="prev_">
+       <id column="id" property="id"/>
+       <result column="username" property="username"></result>
+   </association>
+   <association property="nowEmployee" javaType="cn.wolfcode.crm.domain.Employee" columnPrefix="now_">
+       <id column="id" property="id"/>
+       <result column="username" property="username"></result>
+   </association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from `studenttrack`
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="cn.wolfcode.crm.domain.StudentTrack" useGeneratedKeys="true" keyProperty="id" >
+    insert into `studenttrack` (name, qq, tel, 
+      currentTime, prevEmployee_id, nowEmployee_id
+      )
+    values (#{name,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, 
+      #{currentTime,jdbcType=TIMESTAMP}, #{prevEmployee.id,jdbcType=BIGINT}, #{nowEmployee.id,jdbcType=BIGINT}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.wolfcode.crm.domain.StudentTrack" >
+    update `studenttrack`
+    set name = #{name,jdbcType=VARCHAR},
+      qq = #{qq,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      currentTime = #{currentTime,jdbcType=TIMESTAMP},
+      prevEmployee_id = #{prevEmployee.id,jdbcType=BIGINT},
+      nowEmployee_id = #{nowEmployee.id,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="Base1" parameterType="java.lang.Long" >
+    select id, name, qq, tel, currentTime, prevEmployee_id, nowEmployee_id
+    from `studenttrack`
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="Base2" >
+    select st.id, st.name, st.qq, st.tel, st.currentTime,
+      prev.id prev_id,prev.username prev_username,
+      now.id now_id,now.username now_username
+    from `studenttrack` st
+    LEFT JOIN employee prev ON prev.id=st.prevEmployee_id
+    LEFT JOIN employee now ON now.id=st.nowEmployee_id
+  </select>
+  <select id="queryForList" resultMap="Base2" >
+    select st.id, st.name, st.qq, st.tel, st.currentTime,
+      prev.id prev_id,prev.username prev_username,
+      now.id now_id,now.username now_username
+    from `studenttrack` st
+     JOIN employee prev ON prev.id=st.prevEmployee_id
+     JOIN employee now ON now.id=st.nowEmployee_id
+      <where>
+          <if test="name!=null and name!=''">
+              AND  st.name LIKE concat('%',#{name},'%')
+          </if>
+          <if test="prevId!=null and prevId!=''">
+              and  prev.id=#{prevId}
+          </if>
+          <if test="nowId!=null and nowId!=''">
+              and  now.id=#{nowId}
+          </if>
+      </where>
+      limit #{beginIndex},#{rows}
+  </select>
+  <select id="queryForCount" resultType="integer" >
+    select count(st.id)
+    from `studenttrack` st
+    LEFT JOIN employee prev ON prev.id=st.prevEmployee_id
+    LEFT JOIN employee now ON now.id=st.nowEmployee_id
+      <where>
+          <if test="name!=null and name!=''">
+              AND  st.name LIKE concat('%',#{name},'%')
+          </if>
+          <if test="prevId!=null and prevId!=''">
+              and  prev.id=#{prevId}
+          </if>
+          <if test="nowId!=null and nowId!=''">
+              and  now.id=#{nowId}
+          </if>
+      </where>
+  </select>
+</mapper>

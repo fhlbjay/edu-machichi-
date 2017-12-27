@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.StudentChartMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.StudentChart">
+        <id column="id" property="id"/>
+        <result column="groupType" property="groupType"/>
+        <result column="totalPayFinished" property="totalPayFinished"/>
+        <association property="saleMan" javaType="Employee" column="saleMan">
+            <id column="id" property="id"/>
+            <result column="username" property="username"/>
+            <result column="realname" property="realname"/>
+            <result column="password" property="password"/>
+            <result column="tel" property="tel"/>
+            <result column="email" property="email"/>
+            <result column="inputtime" property="inputtime"/>
+            <result column="state" property="state"/>
+            <result column="admin" property="admin"/>
+        </association>
+    </resultMap>
+    <sql id="baseSql">
+        <where>
+            <if test="keyword !=null and keyword != '' ">
+
+                and  (
+                s.name like concat('%',#{keyword},'%')
+                or s.school like concat('%',#{keyword},'%')
+                or s.address like concat('%',#{keyword},'%')
+                )
+            </if>
+            <if test="beginTime !=null and beginTime != '' ">
+
+                and o.enrolTime >= #{beginTime}
+            </if>
+            <if test="endTime !=null and endTime != '' ">
+
+                and o.enrolTime &lt;= #{endTime}
+            </if>
+        </where>
+    </sql>
+    <select id="studentChart" resultType="java.util.Map">
+        SELECT o.id,
+        ${groupType} groupType,
+        e.username saleMan,
+        sum(p.paidStatus) totalPayFinished
+        FROM officialstudent o LEFT JOIN potentitalstudent s ON o.potential_id=s.id
+        join payment p on p.official_id=o.id join employee e on e.id =s.sale_id
+        <include refid="baseSql"/>
+        GROUP BY ${groupType}
+    </select>
+</mapper>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.ScheduleMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.Schedule">
+        <id column="id" property="id"/>
+        <result column="subject" property="subject"/>
+        <result column="subDate" property="subDate"/>
+        <result column="remark" property="remark"/>
+        <!--内联查询班级信息-->
+        <association property="classGrade" javaType="ClassGrade" columnPrefix="cg_">
+            <id column="id" property="id"/>
+            <result column="name" property="name"/>
+        </association>
+
+        <!--内联查询老师信息-->
+        <association property="teacher" javaType="Employee" columnPrefix="te_">
+            <id column="id" property="id"/>
+            <result column="username" property="username"/>
+        </association>
+
+        <!--内联查询班主任信息-->
+        <association property="classTeacher" javaType="Employee" columnPrefix="be_">
+            <id column="id" property="id"/>
+            <result column="username" property="username"/>
+        </association>
+
+        <!--内联查询班级信息-->
+        <association property="classRoom" javaType="ClassRoom" columnPrefix="cr_">
+            <id column="id" property="id"/>
+            <result column="name" property="name"/>
+        </association>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from `schedule`
+    where id = #{id}
+  </delete>
+    <insert id="insert" parameterType="cn.wolfcode.crm.domain.Schedule" useGeneratedKeys="true" keyProperty="id">
+    insert into `schedule` (subject, subDate, remark, classgrade_id, teacher_id)
+    values (#{subject}, #{subDate}, #{remark}, #{classGrade.id}, #{teacher.id})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.crm.domain.Schedule">
+    update `schedule`
+    set subject = #{subject},
+      subDate = #{subDate},
+      remark = #{remark},
+      classgrade_id = #{classGrade.id},
+      teacher_id = #{teacher.id}
+    where id = #{id}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select id, subject, subDate, remark, classgrade_id, teacher_id
+    from `schedule`
+    where id = #{id}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select id, subject, subDate, remark, classgrade_id, teacher_id
+    from `schedule`
+  </select>
+    <!--高级查询共同的sql-->
+    <sql id="BaseSql">
+        <where>
+            <if test="classRoomId>0">
+                and cr.id = #{classRoomId}
+            </if>
+            <if test="classGradeId>0">
+                and cg.id = #{classGradeId}
+            </if>
+            <if test="teacherId>0">
+                and te.id = #{teacherId}
+            </if>
+            <if test="scheduleId>0">
+                and s.id = #{scheduleId}
+            </if>
+            <if test="beginDate!=null">
+                and s.subDate >= #{beginDate}
+            </if>
+            <if test="endDate!=null">
+                and s.subDate &lt;= #{endDate}
+            </if>
+        </where>
+    </sql>
+    <!--分页-->
+    <!--查询满足条件总数-->
+    <select id="queryForCount" resultType="java.lang.Integer">
+        SELECT count(s.id)
+        FROM `schedule` s LEFT JOIN classgrade cg ON cg.id = s.classgrade_id
+        JOIN classroom cr ON cr.id = cg.classroom_id
+        JOIN employee be ON be.id = cg.employee_id
+        JOIN employee te ON te.id = s.teacher_id
+        <include refid="BaseSql"/>
+    </select>
+    <!--查询满足条件的结果集(有内联sql查询班级,老师信息信息)-->
+    <select id="queryForList" resultMap="BaseResultMap">
+        SELECT s.id,s.subject,s.subDate,s.remark,
+        cr.id cr_id,cr.name cr_name,
+        cg.id cg_id,cg.name cg_name,
+        be.id be_id,be.username be_username,
+        te.id te_id,te.username te_username
+        FROM `schedule` s LEFT JOIN classgrade cg ON cg.id = s.classgrade_id
+        JOIN classroom cr ON cr.id = cg.classroom_id
+        JOIN employee be ON be.id = cg.employee_id
+        JOIN employee te ON te.id = s.teacher_id
+        <include refid="BaseSql"/>
+        limit #{beginIndex},#{rows}
+    </select>
+    <!--查询当日班级日期-->
+    <select id="selectcurrentDaySchedual" resultMap="BaseResultMap">
+        SELECT s.id,s.subject,s.subDate,s.remark,
+        cr.id cr_id,cr.name cr_name,
+        cg.id cg_id,cg.name cg_name,
+        be.id be_id,be.username be_username,
+        te.id te_id,te.username te_username
+        FROM `schedule` s LEFT JOIN classgrade cg ON cg.id = s.classgrade_id
+        JOIN classroom cr ON cr.id = cg.classroom_id
+        JOIN employee be ON be.id = cg.employee_id
+        JOIN employee te ON te.id = s.teacher_id
+        <where>
+            <if test="currentDayTime!=null and currentDayTime!=''">
+                and s.subDate = #{currentDayTime}
+            </if>
+        </where>
+    </select>
+    <!--下载-->
+    <select id="downLoadSchedule" resultMap="BaseResultMap">
+        SELECT s.id,s.subject,s.subDate,s.remark,
+        cr.id cr_id,cr.name cr_name,
+        cg.id cg_id,cg.name cg_name,
+        be.id be_id,be.username be_username,
+        te.id te_id,te.username te_username
+        FROM `schedule` s LEFT JOIN classgrade cg ON cg.id = s.classgrade_id
+        JOIN classroom cr ON cr.id = cg.classroom_id
+        JOIN employee be ON be.id = cg.employee_id
+        JOIN employee te ON te.id = s.teacher_id
+        <include refid="BaseSql"/>
+    </select>
+</mapper>

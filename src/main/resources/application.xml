@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <!--配置DI注解解析器-->
+    <context:annotation-config/>
+    <!--配置IoC注解解析器-->
+    <context:component-scan base-package="cn.wolfcode.crm"/>
+    <!--1.引入数据库配置文件-->
+    <context:property-placeholder location="classpath:jdbc.properties" system-properties-mode="NEVER"/>
+    <!--2.配置数据库连接池-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <!--配置连接池四要素-->
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+    </bean>
+    <!-- 配置SqlsessionFactory -->
+    <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--配置链接数据库-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--配置mybatis的个性化设置-->
+        <property name="configLocation" value="classpath:mybatis.cfg.xml"/>
+        <!--配置mapper映射文件-->
+        <property name="mapperLocations" value="classpath:cn/wolfcode/crm/mapper/*Mapper.xml"/>
+        <!--配置别名-->
+        <property name="typeAliasesPackage" value="cn.wolfcode.crm.domain"/>
+    </bean>
+    <!--配置事务 3W-->
+    <!--what-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--给哪个数据源做增强-->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--配置日志工具类-->
+    <bean id="logUtil" class="cn.wolfcode.crm.util.SystemLogUtil"></bean>
+    <!--where-->
+    <aop:config>
+        <!--切入点-->
+        <aop:pointcut id="pc" expression="execution(* cn.wolfcode.crm.service.*.*(..))"/>
+        <aop:pointcut id="pc2" expression="execution(* cn.wolfcode.crm.service.*.*(..))
+         and !execution(* cn.wolfcode.crm.service.*.export(..)) and !execution(* cn.wolfcode.crm.service.*.input(..))
+        and !execution(* cn.wolfcode.crm.service.*.insertPotentitalStudent(..))
+        and !execution(* cn.wolfcode.crm.service.*.query(..))
+"/>
+
+
+
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="pc"/>
+        <!--在service方法执行之后记录日志-->
+        <aop:aspect ref="logUtil">
+            <aop:after method="writeLog" pointcut-ref="pc2"/>
+        </aop:aspect>
+    </aop:config>
+    <!--when-->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <!--实际要增强的方法-->
+        <tx:attributes>
+            <tx:method name="get*" read-only="true" propagation="SUPPORTS"/>
+            <tx:method name="select*" read-only="true" propagation="SUPPORTS"/>
+            <tx:method name="query*" read-only="true" propagation="SUPPORTS"/>
+            <tx:method name="list*" read-only="true" propagation="SUPPORTS"/>
+            <!--要做事务的方法-->
+            <tx:method name="*" propagation="REQUIRED"/>
+        </tx:attributes>
+    </tx:advice>
+	<!--配置接口映射扫描器主要用来创建mapper的代理对象-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="cn.wolfcode.crm.mapper"/>
+    </bean>
+</beans>

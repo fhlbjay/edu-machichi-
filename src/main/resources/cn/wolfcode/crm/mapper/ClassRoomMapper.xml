@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.ClassRoomMapper" >
+  <resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.ClassRoom" >
+    <id column="id" property="id" />
+    <result column="name" property="name" />
+    <result column="address" property="address" />
+    <result column="seats" property="seats" />
+    <result column="remark" property="remark" />
+    <result column="state" property="state" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from `classroom`
+    where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="cn.wolfcode.crm.domain.ClassRoom" useGeneratedKeys="true" keyProperty="id" >
+    insert into `classroom` (name, address, seats, remark, state)
+    values (#{name}, #{address}, #{seats}, #{remark}, #{state})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.wolfcode.crm.domain.ClassRoom" >
+    update `classroom`
+    set name = #{name},
+      address = #{address},
+      seats = #{seats},
+      remark = #{remark}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, name, address, seats, remark, state
+    from `classroom`
+    where id = #{id}
+  </select>
+  <!--只有在教室启用时,才能为某个班级设置教室-->
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, name, address, seats, remark, state
+    from `classroom`
+    where classroom.state = 1
+  </select>
+  <!--高级查询共同的sql-->
+  <sql id="BaseSql">
+    <where>
+      <if test="keyword!=null and keyword!=''">
+        and name like concat('%',#{keyword},'%')
+      </if>
+    </where>
+  </sql>
+  <!--分页-->
+  <!--查询满足条件总数-->
+  <select id="queryForCount" resultType="java.lang.Integer">
+    select count(id)
+    from `classroom`
+    <include refid="BaseSql"/>
+  </select>
+  <!--查询满足条件的结果集(有内联sql查询部门信息)-->
+  <select id="queryForList" resultMap="BaseResultMap">
+    select id, name, address, seats, remark, state
+    from `classroom`
+    <include refid="BaseSql"/>
+    limit #{beginIndex},#{rows}
+  </select>
+  <!--修改教室状态-->
+  <update id="changeClassRoomState">
+    update `classroom` set state = state^1 where id = #{id}
+  </update>
+  <!--上传课表信息查询教室对象-->
+  <select id="selectClassRoom" resultMap="BaseResultMap">
+    select * from `classroom`
+    WHERE name=#{classRoomName}
+  </select>
+</mapper>

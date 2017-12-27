@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.ClassGradeMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.ClassGrade">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="stuNumber" property="stuNumber"/>
+        <result column="state" property="state"/>
+        <!--内联查询字典明细中的学院信息和教室信息和班主任信息-->
+        <!--学院信息-->
+        <association property="college" javaType="SystemDictionaryItem" columnPrefix="sdic_">
+            <id column="id" property="id"/>
+            <result column="name" property="name"/>
+        </association>
+        <!--教室信息-->
+        <association property="classroom" javaType="ClassRoom" columnPrefix="cr_">
+            <id column="id" property="id"/>
+            <result column="name" property="name"/>
+        </association>
+        <!--班主任信息-->
+        <association property="teacher" javaType="Employee" columnPrefix="e_">
+            <id column="id" property="id"/>
+            <result column="username" property="username"/>
+        </association>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from `classgrade`
+    where id = #{id}
+  </delete>
+    <insert id="insert" parameterType="cn.wolfcode.crm.domain.ClassGrade" useGeneratedKeys="true" keyProperty="id">
+    insert into `classgrade` (name, stuNumber, college_id, state, classroom_id, employee_id
+      )
+    values (#{name}, #{stuNumber}, #{college.id}, #{state}, #{classroom.id}, #{teacher.id}
+      )
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.crm.domain.ClassGrade">
+    update `classgrade`
+    set name = #{name},
+      stuNumber = #{stuNumber},
+      college_id = #{college.id},
+      classroom_id = #{classroom.id},
+      employee_id = #{teacher.id}
+    where id = #{id}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select id, name, stuNumber, college_id, state, classroom_id, employee_id
+    from `classgrade`
+    where id = #{id}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select id, name, stuNumber, college_id, state, classroom_id, employee_id
+    from `classgrade`
+  </select>
+    <!--分页-->
+    <!--查询满足条件总数-->
+    <select id="queryForCount" resultType="java.lang.Integer">
+        SELECT count(cg.id)
+        FROM classgrade cg LEFT JOIN systemdictionaryitem sdi ON sdi.id = cg.college_id
+        LEFT JOIN classroom cr ON cr.id = cg.classroom_id
+        LEFT JOIN employee e ON e.id = cg.employee_id
+        limit #{beginIndex},#{rows}
+  </select>
+    <!--查询满足条件的结果集(有内联sql查询字典明细中的学院信息和教室信息和班主任信息)-->
+    <select id="queryForList" resultMap="BaseResultMap">
+        SELECT cg.id ,cg.name,cg.state,cg.stuNumber,
+        sdi.id sdic_id,sdi.name sdic_name,
+        cr.id cr_id,cr.name cr_name,
+        e.id e_id,e.username e_username
+        FROM classgrade cg LEFT JOIN systemdictionaryitem sdi ON sdi.id = cg.college_id
+        LEFT JOIN classroom cr ON cr.id = cg.classroom_id
+        LEFT JOIN employee e ON e.id = cg.employee_id
+        limit #{beginIndex},#{rows}
+  </select>
+    <!--更改班主任信息-->
+    <update id="changeTeacher" parameterType="cn.wolfcode.crm.domain.ClassGrade">
+        update `classgrade`
+        set employee_id = #{teacher.id}
+        where id = #{id}
+    </update>
+    <!--修改班级状态-->
+    <update id="changeClassGradeState">
+        update `classgrade` set state = state^1 where id = #{id}
+    </update>
+    <!--根据教室查询班级信息-->
+    <select id="classRoomByClassGradeId" resultMap="BaseResultMap">
+        SELECT cg.id ,cg.name,cg.state,cg.stuNumber,
+        sdi.id sdic_id,sdi.name sdic_name,
+        cr.id cr_id,cr.name cr_name,
+        e.id e_id,e.username e_username
+        FROM classgrade cg LEFT JOIN systemdictionaryitem sdi ON sdi.id = cg.college_id
+        LEFT JOIN classroom cr ON cr.id = cg.classroom_id
+        LEFT JOIN employee e ON e.id = cg.employee_id
+        WHERE cr.id=#{classRoomId}
+    </select>
+    <!--查询教室是否存在-->
+    <select id="judgeClassRoomByClassGradeIdExtend" resultMap="BaseResultMap">
+        select id, name from `classgrade`
+        WHERE classgrade.classroom_id=#{id}
+    </select>
+    <!--上传课表信息查询班级对象-->
+    <select id="selectclassGrade" resultMap="BaseResultMap">
+        select * from `classgrade`
+        WHERE name=#{classGradeName}
+    </select>
+</mapper>

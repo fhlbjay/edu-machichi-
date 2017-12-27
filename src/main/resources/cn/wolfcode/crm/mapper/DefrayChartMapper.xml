@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.DefrayChartMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.DefrayChart">
+        <id column="id" property="id"/>
+        <result column="defrayMoney" property="defrayMoney"/>
+        <result column="groupType" property="groupType"/>
+    </resultMap>
+<sql id="baseSql">
+    <where>
+    <if test="keyword !=null and keyword != '' ">
+        and  (
+        handMan.username like concat('%',#{keyword},'%')
+        or auditor.username like concat('%',#{keyword},'%')
+        )
+    </if>
+    <if test="beginTime !=null and beginTime != '' ">
+
+        and d.defrayTime >= #{beginTime}
+    </if>
+    <if test="endTime !=null and endTime != '' ">
+
+        and d.defrayTime &lt;= #{endTime}
+    </if>
+    </where>
+</sql>
+    <select id="selectByDiffCondition" resultMap="BaseResultMap">
+        SELECT
+        sum(d.defrayMoney) defrayMoney,
+        ${groupType} groupType
+        FROM `defray` d LEFT JOIN employee applicant ON d.applicantId = applicant.id
+        LEFT JOIN employee handMan ON d.handManId = handMan.id
+        LEFT JOIN employee auditor ON d.auditorId = auditor.id
+        LEFT JOIN systemdictionaryitem paymentType ON d.paymentTypeId = paymentType.id
+        LEFT JOIN systemdictionaryitem defrayType ON d.defrayTypeId = defrayType.id
+        LEFT JOIN classgrade classGrade ON d.classGradeId = classGrade.id
+        <include refid="baseSql"/>
+        GROUP BY ${groupType}
+    </select>
+</mapper>

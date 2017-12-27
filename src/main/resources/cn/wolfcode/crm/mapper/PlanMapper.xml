@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.PlanMapper" >
+  <resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.Plan" >
+    <id column="id" property="id" />
+    <result column="date" property="date" />
+    <result column="plan" property="plan" />
+    <result column="result" property="result" />
+    <association property="employee" column="employee_id" javaType="cn.wolfcode.crm.domain.Employee"
+                 select="cn.wolfcode.crm.mapper.EmployeeMapper.selectByPrimaryKey"
+    ></association>
+    <association property="planState" column="state_id" javaType="SystemDictionaryItem"
+                 select="cn.wolfcode.crm.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from `plan`
+    where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="cn.wolfcode.crm.domain.Plan" useGeneratedKeys="true" keyProperty="id" >
+    insert into `plan` (date, plan, result, employee_id, state_id)
+    values (#{date}, #{plan}, #{result}, #{employee.id}, #{planState.id})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.wolfcode.crm.domain.Plan" >
+    update `plan`
+    set date = #{date},
+      plan = #{plan},
+      result = #{result},
+      employee_id = #{employee.id},
+      state_id = #{planState.id}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" >
+    select id, date, plan, result, employee_id, state_id
+    from `plan`
+    where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, date, plan, result, employee_id, state_id
+    from `plan`
+  </select>
+</mapper>

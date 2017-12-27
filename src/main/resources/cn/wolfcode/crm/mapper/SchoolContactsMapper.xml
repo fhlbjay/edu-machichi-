@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.SchoolContactsMapper" >
+  <resultMap id="Base1" type="cn.wolfcode.crm.domain.SchoolContacts" >
+    <id column="id" property="id" />
+    <result column="contactsName" property="contactsName" />
+    <result column="contactsGender" property="contactsGender" />
+    <result column="contactsBirthday" property="contactsBirthday" />
+    <result column="contactsDepartment" property="contactsDepartment" />
+    <result column="contactsPosition" property="contactsPosition" />
+    <result column="contactsTel" property="contactsTel" />
+    <result column="contactsQQ" property="contactsQQ" />
+    <result column="contactsEmail" property="contactsEmail" />
+    <result column="contactsMain" property="contactsMain" />
+    <result column="contactsCollege" property="contactsCollege" />
+    <result column="contactsAddress" property="contactsAddress" />
+    <result column="contactsIntro" property="contactsIntro" />
+    <result column="contactsCallName" property="contactsCallName" />
+    <association property="bigCustomer" column="bigCustomer_id" javaType="cn.wolfcode.crm.domain.Universitytrace"
+                 select="cn.wolfcode.crm.mapper.UniversitytraceMapper.selectByPrimaryKey"></association>
+  </resultMap>
+  <resultMap id="Base2" type="cn.wolfcode.crm.domain.SchoolContacts" >
+    <id column="id" property="id" />
+    <result column="contactsName" property="contactsName" />
+    <result column="contactsGender" property="contactsGender" />
+    <result column="contactsBirthday" property="contactsBirthday" />
+    <result column="contactsDepartment" property="contactsDepartment" />
+    <result column="contactsPosition" property="contactsPosition" />
+    <result column="contactsTel" property="contactsTel" />
+    <result column="contactsQQ" property="contactsQQ" />
+    <result column="contactsEmail" property="contactsEmail" />
+    <result column="contactsMain" property="contactsMain" />
+    <result column="contactsCollege" property="contactsCollege" />
+    <result column="contactsAddress" property="contactsAddress" />
+    <result column="contactsIntro" property="contactsIntro" />
+    <result column="contactsCallName" property="contactsCallName" />
+    <association property="bigCustomer"  javaType="cn.wolfcode.crm.domain.Universitytrace" columnPrefix="un_">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+    </association>
+    <association property="school"  javaType="cn.wolfcode.crm.domain.SystemDictionaryItem" columnPrefix="sc_">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+    </association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from `schoolcontacts`
+    where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="cn.wolfcode.crm.domain.SchoolContacts" useGeneratedKeys="true" keyProperty="id" >
+    insert into `schoolcontacts` (contactsName, contactsGender, contactsBirthday, bigCustomer_id, 
+      contactsDepartment, contactsPosition, contactsTel, contactsQQ, contactsEmail, 
+      contactsMain, contactsCollege, contactsAddress, contactsIntro, contactsCallName
+      )
+    values (#{contactsName}, #{contactsGender}, #{contactsBirthday}, #{bigCustomer.id},
+      #{contactsDepartment}, #{contactsPosition}, #{contactsTel}, #{contactsQQ}, #{contactsEmail}, 
+      #{contactsMain}, #{contactsCollege}, #{contactsAddress}, #{contactsIntro}, #{contactsCallName}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.wolfcode.crm.domain.SchoolContacts" >
+    update `schoolcontacts`
+    set contactsName = #{contactsName},
+      contactsGender = #{contactsGender},
+      contactsBirthday = #{contactsBirthday},
+      bigCustomer_id = #{bigCustomer.id},
+      contactsDepartment = #{contactsDepartment},
+      contactsPosition = #{contactsPosition},
+      contactsTel = #{contactsTel},
+      contactsQQ = #{contactsQQ},
+      contactsEmail = #{contactsEmail},
+      contactsMain = #{contactsMain},
+      contactsCollege = #{contactsCollege},
+      contactsAddress = #{contactsAddress},
+      contactsIntro = #{contactsIntro},
+      contactsCallName = #{contactsCallName}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="Base1" parameterType="java.lang.Long" >
+    select id, contactsName, contactsGender, contactsBirthday, bigCustomer_id, contactsDepartment, 
+    contactsPosition, contactsTel, contactsQQ, contactsEmail, contactsMain, contactsCollege, 
+    contactsAddress, contactsIntro, contactsCallName
+    from `schoolcontacts`
+    where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="Base2" >
+    select sc.id, sc.contactsName, sc.contactsGender, sc.contactsBirthday, sc.bigCustomer_id, sc.contactsDepartment,
+    sc.contactsPosition,sc.contactsTel, sc.contactsQQ, sc.contactsEmail, sc.contactsMain, sc.contactsCollege,
+    sc.contactsAddress, sc.contactsIntro, sc.contactsCallName,un.id un_id,un.name un_name
+    from `schoolcontacts` sc
+    LEFT JOIN universitytrace un ON sc.bigCustomer_id=un.id
+  </select>
+  
+  
+  <!--分页-->
+  <sql id="baseSql">
+  		<where>
+            <if test="keyword != null and keyword != ''">
+			  and (sc.contactsName like concat('%',#{keyword},'%')) or
+                (sc.contactsCallName like concat('%',#{keyword},'%'))
+  			</if>
+  			<if test="beginDate != null and beginDate != ''">
+                and sc.contactsBirthday >= #{beginDate}
+            </if>
+            <if test="endDate != null  and endDate != ''">
+                and sc.contactsBirthday &lt;= #{endDate}
+            </if>
+            <if test="schoolId !=null and schoolId !=''">
+                and sc.bigCustomer_id=#{schoolId}
+            </if>
+  		</where>
+  </sql>
+  <!--查询满足条件总数-->
+  <select id="queryForCount" resultType="java.lang.Integer">
+    select count(sc.id) from `schoolcontacts` sc
+    <include refid="baseSql"/>
+  </select>
+  <!--查询满足条件的结果集(有内联sql查询部门信息)-->
+  <select id="queryForList" resultMap="Base2">
+    select sc.id, sc.contactsName, sc.contactsGender, sc.contactsBirthday, sc.bigCustomer_id, sc.contactsDepartment,
+    sc.contactsPosition, sc.contactsTel, sc.contactsQQ, sc.contactsEmail, sc.contactsMain, sc.contactsCollege,
+    sc.contactsAddress, sc.contactsIntro, sc.contactsCallName,un.id un_id,un.name un_name
+    from `schoolcontacts` sc
+      LEFT JOIN universitytrace un ON sc.bigCustomer_id=un.id
+    <include refid="baseSql"/>
+    limit #{beginIndex},#{rows}
+  </select>
+  
+  
+</mapper>

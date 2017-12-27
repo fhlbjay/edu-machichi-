@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.PaymentManageMapper">
+	<resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.PaymentManage">
+		<id column="id" property="id"/>
+		<result column="billNum" property="billNum"/>
+		<result column="auditStatus" property="auditStatus"/>
+		<result column="payDate" property="payDate"/>
+		<result column="paymentAmount" property="paymentAmount"/>
+		<result column="remark" property="remark"/>
+		<association property="paymentType" column="paymentType_id" javaType="SystemDictionaryItem"
+		             select="cn.wolfcode.crm.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+		<association property="payee" column="payee_id" javaType="cn.wolfcode.crm.domain.Employee"
+		             select="cn.wolfcode.crm.mapper.EmployeeMapper.selectByPrimaryKey"/>
+		<association property="audit" column="audit_id" javaType="cn.wolfcode.crm.domain.Employee"
+		             select="cn.wolfcode.crm.mapper.EmployeeMapper.selectByPrimaryKey"/>
+		<association property="officialStudent" javaType="OfficialStudent"
+		             column="official_id"
+		             select="cn.wolfcode.crm.mapper.OfficialStudentMapper.selectByPrimaryKey"/>
+	</resultMap>
+
+	<resultMap id="baseJoinMap" type="PaymentManage">
+		<id property="id" column="pm_id"/>
+		<result property="billNum" column="pm_billNum"/>
+		<result property="auditStatus" column="pm_auditStatus"/>
+		<result property="payDate" column="pm_payDate"/>
+		<result property="paymentAmount" column="pm_paymentAmount"/>
+		<result property="remark" column="pm_remark"/>
+		<association property="payee" javaType="Employee" column="pm_payeeId"
+		             select="cn.wolfcode.crm.mapper.EmployeeMapper.selectByPrimaryKey">
+		</association>
+		<association property="audit" javaType="Employee" column="pm_auditId"
+		             select="cn.wolfcode.crm.mapper.EmployeeMapper.selectByPrimaryKey">
+		</association>
+		<association property="paymentType" javaType="SystemDictionaryItem" column="pm_paymentTypeId"
+		             select="cn.wolfcode.crm.mapper.SystemDictionaryItemMapper.selectByPrimaryKey">
+		</association>
+		<association property="officialStudent" javaType="OfficialStudent">
+			<id property="id" column="os_id"/>
+			<result property="enrolTime" column="os_enrolTime"/>
+		</association>
+		<association property="officialStudent.payment" javaType="Payment" columnPrefix="p_">
+			<id property="id" column="id"/>
+			<result property="totalFee" column="totalFee"/>
+			<result property="fee2pay" column="fee2pay"/>
+			<result property="paidStatus" column="paidStatus"/>
+			<result property="paidupFee" column="paidupFee"/>
+		</association>
+		<association property="officialStudent.potentitalStudent" javaType="PotentitalStudent">
+			<id column="id" property="id" jdbcType="BIGINT"/>
+			<result column="age" property="age" jdbcType="INTEGER"/>
+			<result column="gender" property="gender" jdbcType="BIT"/>
+			<result column="name" property="name" jdbcType="VARCHAR"/>
+			<result column="track_times" property="trackTimes" jdbcType="INTEGER"/>
+			<result column="prevDate" property="prevDate" jdbcType="TIMESTAMP"/>
+			<result column="visitDate" property="visitDate" jdbcType="TIMESTAMP"/>
+			<result column="nextDate" property="nextDate" jdbcType="TIMESTAMP"/>
+			<result column="QQ" property="qq" jdbcType="VARCHAR"/>
+			<result column="tel" property="tel" jdbcType="VARCHAR"/>
+			<result column="school" property="school" jdbcType="VARCHAR"/>
+			<result column="track_state" property="trackState" jdbcType="BIT"/>
+			<result column="remark" property="remark" jdbcType="VARCHAR"/>
+			<result column="email" property="email" jdbcType="VARCHAR"/>
+			<result column="weChat" property="weChat" jdbcType="VARCHAR"/>
+			<result column="formBuildDate" property="formBuildDate"/>
+			<result column="inputTime" property="inputTime"/>
+			<result column="address" property="address"/>
+			<result column="major" property="major"/>
+			<result column="focusProblem" property="focusProblem"/>
+			<result column="hasPaid" property="hasPaid"/>
+			<result column="introducer" property="introducer"/>
+			<result column="communicationContext" property="communicationContext"/>
+			<result column="consultationTime" property="consultationTime"/>
+			<result column="summary" property="summary"/>
+			<result column="sn" property="sn"/>
+			<result column="enrollUniversityDate" property="enrollUniversityDate"/>
+		</association>
+		<association property="officialStudent.potentitalStudent.classGrade"
+		             javaType="cn.wolfcode.crm.domain.ClassGrade"
+		             columnPrefix="cg_">
+			<id property="id" column="id"/>
+			<result property="name" column="name"/>
+		</association>
+		<association property="officialStudent.potentitalStudent.employee" javaType="cn.wolfcode.crm.domain.Employee"
+		             columnPrefix="e_">
+			<id property="id" column="id"/>
+			<result property="username" column="username"/>
+		</association>
+		<association property="officialStudent.potentitalStudent.campus"
+		             javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             columnPrefix="campus_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+		<association property="officialStudent.potentitalStudent.education"
+		             javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             columnPrefix="education_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+		<association property="officialStudent.potentitalStudent.subject"
+		             javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             columnPrefix="subject_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+		<association property="officialStudent.potentitalStudent.source"
+		             javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             columnPrefix="source_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+		<association property="officialStudent.potentitalStudent.clientType"
+		             javaType="cn.wolfcode.crm.domain.SystemDictionaryItem"
+		             columnPrefix="clientType_">
+			<id property="id" column="id"/>
+			<result property="parent.id" column="parent_id"/>
+			<result property="name" column="name"/>
+			<result property="intro" column="intro"></result>
+		</association>
+
+
+	</resultMap>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		DELETE FROM `paymentmanage`
+		WHERE id = #{id}
+	</delete>
+	<insert id="insert" parameterType="cn.wolfcode.crm.domain.PaymentManage" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `paymentmanage` (official_id, billNum, auditStatus, payee_id, payDate,
+		                             paymentType_id, paymentAmount, remark)
+		VALUES (#{officialStudent.id}, #{billNum}, 0, #{payee.id}, now(),
+		        #{paymentType.id}, #{paymentAmount}, #{remark})
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="cn.wolfcode.crm.domain.PaymentManage">
+		UPDATE `paymentmanage`
+		SET official_id    = #{officialStudent.id},
+			payee_id       = #{payee.id},
+			paymentAmount  = #{paymentAmount},
+			remark         = #{remark},
+			paymentType_id = #{paymentType.id}
+		WHERE id = #{id}
+	</update>
+	<update id="audit">
+		UPDATE `paymentmanage`
+		SET
+			auditStatus = 1,
+			audit_id    = #{auditId}
+		WHERE id = #{id}
+	</update>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		SELECT
+			id,
+			official_id,
+			billNum,
+			auditStatus,
+			payee_id,
+			payDate,
+			paymentAmount,
+			remark,
+			audit_id,
+			paymentType_id
+		FROM `paymentmanage`
+		WHERE id = #{id}
+	</select>
+	<select id="selectAll" resultMap="BaseResultMap">
+		SELECT
+			id,
+			official_id,
+			billNum,
+			auditStatus,
+			payee_id,
+			payDate,
+			paymentAmount,
+			remark,
+			audit_id,
+			paymentType_id
+		FROM `paymentmanage`
+	</select>
+
+	<!--分页-->
+	<!--查询满足条件总数-->
+	<select id="queryForCount" resultType="java.lang.Integer">
+		SELECT count(pm.id)
+		FROM paymentmanage pm
+		JOIN officialstudent os ON pm.official_id = os.id
+		LEFT JOIN payment p ON p.official_id = os.id
+		JOIN `potentitalstudent` ps ON os.potential_id = ps.id
+		LEFT JOIN employee e ON e.id=ps.sale_id
+		LEFT JOIN classgrade cg ON cg.id=ps.class_id
+		LEFT JOIN systemdictionaryitem campus ON campus.id=ps.campus_id
+		LEFT JOIN systemdictionaryitem education ON education.id=ps.education
+		LEFT JOIN systemdictionaryitem subject ON subject.id=ps.subject_id
+		LEFT JOIN systemdictionaryitem source ON source.id=ps.source_id
+		LEFT JOIN systemdictionaryitem clientType ON clientType.id=ps.clientType_id
+		<include refid="baseSql"/>
+	</select>
+	<!--查询满足条件的结果集(有内联sql查询部门信息)-->
+	<select id="queryForList" resultMap="baseJoinMap">
+		SELECT
+		pm.id pm_id,
+		pm.official_id pm_officialId,
+		pm.billNum pm_billNum,
+		pm.auditStatus pm_auditStatus,
+		pm.payee_id pm_payeeId,
+		pm.payDate pm_payDate,
+		pm.paymentType_id pm_paymentTypeId,
+		pm.paymentAmount pm_paymentAmount,
+		pm.remark pm_remark,
+		pm.audit_id pm_auditId,
+		p.fee2pay p_fee2pay,
+		p.totalFee p_totalFee,
+		p.paidStatus p_paidStatus,
+		p.paidupFee p_paidupFee,
+		os.id os_id,os.enrolTime os_enrolTime,os.status_id os_statusId, ps.id, ps.age,ps.email, ps.gender,
+		ps.name,e.id
+		e_id,e.username e_username,ps.sn,
+		ps.track_times, ps.prevDate, ps.visitDate, ps.nextDate,ps.formBuildDate,ps.introducer,
+		ps.QQ, ps.tel,
+		ps.school,ps.weChat,ps.inputTime,ps.address,ps.major,ps.hasPaid,ps.consultationTime,ps.summary,ps.communicationContext,
+		source.id source_id,source.parent_id source_parent_id,source.name source_name,source.intro source_intro,
+		clientType.id clientType_id,clientType.parent_id clientType_parent_id,clientType.name
+		clientType_name,clientType.intro clientType_intro,
+		campus.id campus_id,campus.parent_id campus_parent_id, campus.name campus_name,campus.intro campus_intro ,cg.id
+		cg_id,cg.name cg_name,
+		ps.remark,
+		education.id education_id,education.parent_id education_parent_id,education.name education_name,education.intro
+		education_intro,subject.id subject_id,subject.parent_id subject_parent_id,subject.name
+		subject_name,subject.intro
+		subject_intro
+		FROM paymentmanage pm LEFT JOIN officialstudent os ON pm.official_id = os.id
+		LEFT JOIN payment p ON p.official_id = os.id
+		LEFT JOIN `potentitalstudent` ps ON os.potential_id = ps.id
+		LEFT JOIN employee e ON e.id=ps.sale_id
+		LEFT JOIN classgrade cg ON cg.id=ps.class_id
+		LEFT JOIN systemdictionaryitem campus ON campus.id=ps.campus_id
+		LEFT JOIN systemdictionaryitem education ON education.id=ps.education
+		LEFT JOIN systemdictionaryitem subject ON subject.id=ps.subject_id
+		LEFT JOIN systemdictionaryitem source ON source.id=ps.source_id
+		LEFT JOIN systemdictionaryitem clientType ON clientType.id=ps.clientType_id
+		<include refid="baseSql"/>
+		LIMIT #{beginIndex},#{rows}
+	</select>
+
+	<!--高级查询共同的sql-->
+	<sql id="baseSql">
+		<where>
+			<if test="keyword!=null and keyword!=''">
+				and (ps.name like concat('%', #{keyword}, '%')
+				or cg.name like concat('%', #{keyword}, '%'))
+			</if>
+			<if test="beginChargeDate!=null">
+				and pm.payDate >= #{beginChargeDate}
+			</if>
+			<if test="endChargeDate!=null">
+				and pm.payDate &lt;= #{endChargeDate}
+			</if>
+			<if test="classgradeId>0">
+				and cg.id = #{classgradeId}
+			</if>
+		</where>
+	</sql>
+</mapper>

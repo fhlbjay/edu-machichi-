@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.RegisterMapper" >
+  <resultMap id="Base1" type="cn.wolfcode.crm.domain.Register" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="sn" property="sn" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="qq" property="qq" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="testTime" property="testTime" jdbcType="TIMESTAMP" />
+    <result column="testResult" property="testResult" jdbcType="BIT" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <!--<result column="hander_id" property="hander_id" jdbcType="BIGINT" />-->
+    <result column="state" property="state" jdbcType="BIT" />
+      <association property="employee" column="employee_id" javaType="cn.wolfcode.crm.domain.Employee"
+                   select="cn.wolfcode.crm.mapper.EmployeeMapper.selectByPrimaryKey"></association>
+      <association property="classGrade" column="class_id" javaType="cn.wolfcode.crm.domain.ClassGrade"
+                   select="cn.wolfcode.crm.mapper.ClassGradeMapper.selectByPrimaryKey"></association>
+  </resultMap>
+  <resultMap id="Base2" type="cn.wolfcode.crm.domain.Register" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="sn" property="sn" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="qq" property="qq" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="testTime" property="testTime" jdbcType="TIMESTAMP" />
+    <result column="testResult" property="testResult" jdbcType="BIT" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <!--<result column="hander_id" property="hander_id" jdbcType="BIGINT" />-->
+    <result column="state" property="state" jdbcType="BIT" />
+    <association property="classGrade" javaType="cn.wolfcode.crm.domain.ClassGrade" columnPrefix="cg_">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+    </association>
+    <association property="employee" javaType="cn.wolfcode.crm.domain.Employee" columnPrefix="e_">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+    </association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from `register`
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="cn.wolfcode.crm.domain.Register" useGeneratedKeys="true" keyProperty="id" >
+    insert into `register` (sn, name, employee_id,
+      qq, tel, class_id, testTime,
+      testResult, remark,/* hander_id, */
+      state)
+    values (#{sn,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{employee_id,jdbcType=BIGINT},
+      #{qq,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, #{class_id,jdbcType=BIGINT}, #{testTime,jdbcType=TIMESTAMP},
+      #{testResult,jdbcType=BIT}, #{remark,jdbcType=VARCHAR}/*, #{hander_id,jdbcType=BIGINT}*/,
+      #{state,jdbcType=BIT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.wolfcode.crm.domain.Register" >
+    update `register`
+    set
+      name = #{name,jdbcType=VARCHAR},
+      employee_id = #{employee.id,jdbcType=BIGINT},
+      qq = #{qq,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      testTime = #{testTime,jdbcType=TIMESTAMP},
+      testResult = #{testResult,jdbcType=BIT},
+      remark = #{remark,jdbcType=VARCHAR},
+      state = #{state,jdbcType=BIT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="Base1" parameterType="java.lang.Long" >
+    select id, sn, name, employee_id, qq, tel, class_id, testTime, testResult, remark,
+    hander_id, state
+    from `register`
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="Base2" >
+    select r.id, r.sn, r.name, e.id e_id,e.username e_username, r.qq, r.tel,cg.id cg_id,cg.name cg_name, testTime, testResult, remark,
+   /* hander_id,*/ r.state
+    from `register` r
+      LEFT JOIN employee e ON e.id=r.employee_id
+      LEFT JOIN classgrade cg ON cg.id=r.class_id
+  </select>
+    <!--修改状态-->
+    <update id="changeState">
+        update `register` set state = state^1 where id = #{id}
+    </update>
+    <!--高级查询-->
+    <select id="queryForList" resultMap="Base2" >
+        select r.id, r.sn, r.name, e.id e_id,e.username e_username, r.qq, r.tel,cg.id cg_id,cg.name cg_name, testTime, testResult, remark,
+        /* hander_id,*/ r.state
+        from `register` r
+        LEFT JOIN employee e ON e.id=r.employee_id
+        LEFT JOIN classgrade cg ON cg.id=r.class_id
+            <include refid="refid"></include>
+        LIMIT #{beginIndex},#{rows}
+    </select>
+    <select id="queryForCount" resultType="integer" >
+        select count(r.id)
+        from `register` r
+        LEFT JOIN employee e ON e.id=r.employee_id
+        LEFT JOIN classgrade cg ON cg.id=r.class_id
+            <include refid="refid"></include>
+    </select>
+    <sql id="refid">
+        <where>
+            <if test="name!=null and name !=''">
+                and r.name =#{name}
+            </if>
+        </where>
+    </sql>
+
+   <insert id="testRegister">
+       INSERT INTO  register(name,qq,tel,testTime,remark,class_id,state,testResult,employee_id)VALUE (#{name},#{qq},#{tel},#{testTime},#{remark},#{classGrade.id},0,0,#{employee.id})
+   </insert>
+</mapper>

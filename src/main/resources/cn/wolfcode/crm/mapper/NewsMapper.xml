@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.NewsMapper" >
+  <resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.News" >
+    <id column="id" property="id" />
+    <result column="title" property="title" />
+    <result column="content" property="content" />
+    <result column="writeTime" property="writeTime" />
+        <association property="employee" javaType="Employee" columnPrefix="employee_">
+		            <id column="id" property="id"/>
+		            <result column="username" property="username"/>
+        </association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" >
+    delete from `news`
+    where id = #{id}
+  </delete>
+  <insert id="insert"  useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    insert into `news` (employee_id, title, content, writeTime)
+    values (#{employee.id}, #{title}, #{content}, #{writeTime})
+  </insert>
+  <update id="updateByPrimaryKey"  >
+    update `news`
+    set employee_id = #{employee.id},
+      title = #{title},
+      content = #{content},
+      writeTime = #{writeTime}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" >
+    select id, employee_id, title, content, writeTime
+    from `news`
+    where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, employee_id, title, content, writeTime
+    from `news`
+  </select>
+  
+  
+  
+  <!--分页-->
+  <sql id="baseSql">
+  		<where>
+  			<if test="keyword != null and keyword != ''">
+  					and news.content like contact('%',keyword,'%')
+  			</if>
+  		</where>
+  </sql>
+  <!--查询满足条件总数-->
+  <select id="queryForCount" resultType="int">
+    select count(id) from `news` 
+    <include refid="baseSql"/>
+  </select>
+  <!--查询满足条件的结果集(有内联sql查询员工信息)-->
+  <select id="queryForList" resultMap="BaseResultMap">
+    select news.id, employee_id, title, content, writeTime, 
+    employee.id employee_id, employee.username employee_username
+    from `news` news 
+    join `employee` employee on employee.id=news.employee_id
+    <include refid="baseSql"/>
+    limit #{beginIndex},#{rows}
+  </select>
+</mapper>

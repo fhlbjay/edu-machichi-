@@ -1,0 +1,193 @@
+.calendar table {
+    table-layout: fixed;
+    border-collapse: separate;
+    width: 100%;
+    height: 100%;
+}
+
+.calendar-noborder {
+    border: 0;
+}
+.calendar-header {
+    position: relative;
+    height: 22px;
+    padding: 3px 0;
+    border-radius: 3px;
+}
+.calendar-title {
+    text-align: center;
+    height: 22px;
+}
+.calendar-title span {
+    position: relative;
+    display: inline-block;
+    padding: 0 10px;
+    height: 22px;
+    line-height: 22px;
+    cursor: pointer;
+    border-radius: 3px;
+    color: #fff;
+}
+.calendar-prevmonth,
+.calendar-nextmonth,
+.calendar-prevyear,
+.calendar-nextyear {
+    position: absolute;
+    top: 50%;
+    margin-top: -7px;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    font-size: 1px;
+    border-radius: 3px;
+}
+.calendar-prevmonth {
+    left: 25px;
+    background: url('/static/plugins/jquery-easyui/themes/icons/calendar_arrows.png') no-repeat -18px -1px;
+}
+.calendar-nextmonth {
+    right: 25px;
+    background: url('/static/plugins/jquery-easyui/themes/icons/calendar_arrows.png') no-repeat -33px -1px;
+}
+.calendar-prevyear {
+    left: 8px;
+    background: url('/static/plugins/jquery-easyui/themes/icons/calendar_arrows.png') no-repeat -1px -1px;
+}
+.calendar-nextyear {
+    right: 8px;
+    background: url('/static/plugins/jquery-easyui/themes/icons/calendar_arrows.png') no-repeat -48px -1px;
+}
+.calendar-body {
+    position: relative;
+}
+.calendar-body th,
+.calendar-body td {
+    text-align: center;
+}
+.calendar-day {
+    border: 1px solid #fff;
+    cursor: pointer;
+}
+.calendar-other-month {
+    opacity: 0.3;
+    filter: alpha(opacity=30);
+}
+.calendar-disabled {
+    opacity: 0.6;
+    filter: alpha(opacity=60);
+    cursor: default;
+}
+.calendar-menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 180px;
+    height: 150px;
+    padding: 5px;
+    font-size: 12px;
+    display: none;
+    overflow: hidden;
+}
+.calendar-menu-year-inner {
+    text-align: center;
+    padding-bottom: 5px;
+}
+.calendar-menu-year {
+    width: 80px;
+    text-align: center;
+    outline-style: none;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #ccc;
+    resize: none;
+    margin: 0;
+    padding: 2px;
+    font-weight: bold;
+    border-radius:3px;
+    box-shadow: 0px 1px 5px rgba(0,0,0,.05) inset;
+
+}
+.calendar-menu-year:focus{
+    border-color: #66afe9;
+    box-shadow: 0 0 5px 0 #93cdf9;
+}
+.calendar-menu-prev,
+.calendar-menu-next {
+    display: inline-block;
+    width: 21px;
+    height: 21px;
+    vertical-align: top;
+    cursor: pointer;
+    border-radius:3px;
+}
+.calendar-menu-prev {
+    margin-right: 10px;
+    background: url('/static/plugins/jquery-easyui/themes/icons/calendar_arrows.png') no-repeat 2px 2px;
+}
+.calendar-menu-next {
+    margin-left: 10px;
+    background: url('/static/plugins/jquery-easyui/themes/icons/calendar_arrows.png') no-repeat -45px 2px;
+}
+.calendar-menu-month {
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 3px;
+}
+.calendar-body th,
+.calendar-menu-month {
+    color: #4d4d4d;
+
+}
+.calendar-day {
+    background: #e6e6e6;
+}
+
+
+.calendar-sunday {
+  color: #ff2594;
+}
+.calendar-saturday {
+  color: #1929ee;
+}
+
+.calendar-today {
+    color: #fff;
+    background: #949494;
+}
+
+.calendar {
+    border-color: #ccc;
+}
+.calendar-header {
+    background: #0c80d7;
+}
+.calendar-body,
+.calendar-menu {
+    background: #ffffff;
+}
+.calendar-body th {
+    padding: 2px 0;
+}
+.calendar-hover,
+.calendar-nav-hover,
+.calendar-menu-hover {
+    background-color: #229fff;
+    color: #fff;
+}
+
+.calendar-header .calendar-nav-hover{
+    background-color: #5db2ff;
+}
+.calendar-hover {
+    padding: 0;
+}
+.calendar-selected {
+    background-color: #ff5440;
+    color: #fff;
+    padding: 0;
+}
+.datebox-calendar-inner {
+    height: 180px;
+}
+.datebox-calendar-inner .calendar{ padding: 5px; }

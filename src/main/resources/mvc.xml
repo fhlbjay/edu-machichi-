@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        ">
+
+    <!--引入spring相关的主键配置  -->
+    <import resource="classpath:application.xml"/>
+    <!--引入shiro配置-->
+    <import resource="classpath:shiro.xml"/>
+    <!--
+      配置spring  mvc驱动
+      包含:1:处理器映射器   2:处理器适配器  3:视图解析器
+   -->
+    <mvc:annotation-driven/>
+
+    <!-- 覆盖默认的视图解析器 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!-- 配置视图前缀 :给请求返回的视图前缀加上后缀视图:相当于:前缀+视图+后缀-->
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <!-- 配置视图后缀-->
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    <!-- 文件上传解析器 (必须配否则文件无法上传)-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="104857600"/>
+    </bean>
+</beans>

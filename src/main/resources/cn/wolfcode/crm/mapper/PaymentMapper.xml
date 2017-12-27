@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.PaymentMapper">
+	<resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.Payment">
+		<id column="id" property="id"/>
+		<result column="official_id" property="official_id"/>
+		<result column="planFee" property="planFee"/>
+		<result column="reduceFee" property="reduceFee"/>
+		<result column="reduceExplanation" property="reduceExplanation"/>
+		<result column="otherDiscount" property="otherDiscount"/>
+		<result column="otherFee" property="otherFee"/>
+		<result column="totalFee" property="totalFee"/>
+		<result column="fee2pay" property="fee2pay"/>
+		<result column="paidupFee" property="paidupFee"/>
+		<result column="paidStatus" property="paidStatus"/>
+		<association property="paymentType" column="paymentType_id" javaType="SystemDictionaryItem"
+		             select="cn.wolfcode.crm.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+	</resultMap>
+	<delete id="deleteByOfficialId" parameterType="java.lang.Long">
+		DELETE FROM `payment`
+		WHERE official_id = #{id}
+	</delete>
+	<insert id="insert" parameterType="cn.wolfcode.crm.domain.Payment" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `payment` (official_id, planFee, reduceFee, reduceExplanation, otherDiscount,
+		                       otherFee, totalFee, fee2pay, paidupFee, paidStatus, paymentType_id)
+		VALUES (#{official_id}, #{planFee}, #{reduceFee}, #{reduceExplanation}, #{otherDiscount},
+		                        #{otherFee}, #{totalFee}, #{totalFee}, 0, 0, #{paymentType.id})
+	</insert>
+	<update id="updateByOfficialId" parameterType="cn.wolfcode.crm.domain.Payment">
+		UPDATE `payment`
+		SET
+			planFee           = #{planFee},
+			reduceFee         = #{reduceFee},
+			reduceExplanation = #{reduceExplanation},
+			otherDiscount     = #{otherDiscount},
+			otherFee          = #{otherFee},
+			totalFee          = #{totalFee},
+			fee2pay           = #{fee2pay},
+			paidupFee         = #{paidupFee},
+			paidStatus        = #{paidStatus},
+			paymentType_id    = #{paymentType.id}
+		WHERE official_id = #{id}
+	</update>
+
+	<update id="updatePaidupFee">
+		UPDATE payment
+		SET paidupFee = paidupFee + #{paymentAmount}
+		WHERE official_id = #{id}
+	</update>
+	<update id="updateFee2pay">
+		UPDATE payment
+		SET fee2pay = totalFee - paidupFee
+		WHERE official_id = #{id}
+	</update>
+	<update id="updatePaidStatus">
+		UPDATE payment
+		SET paidStatus = 1
+		WHERE fee2pay = 0
+	</update>
+	<select id="selectByOfficialId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		SELECT
+			id,
+			official_id,
+			planFee,
+			reduceFee,
+			reduceExplanation,
+			otherDiscount,
+			otherFee,
+			totalFee,
+			fee2pay,
+			paidupFee,
+			paidStatus,
+			paymentType_id
+		FROM `payment`
+		WHERE official_id = #{id}
+	</select>
+
+	<!--分页-->
+	<!--查询满足条件总数-->
+	<select id="queryForCount" resultType="java.lang.Integer">
+		SELECT count(id) FROM payment
+		<!--<include refid="baseSql"/>-->
+	</select>
+	<!--查询满足条件的结果集(有内联sql查询部门信息)-->
+	<select id="queryForList" resultMap="BaseResultMap">
+		SELECT
+		id,
+		official_id,
+		planFee,
+		reduceFee,
+		reduceExplanation,
+		otherDiscount,
+		otherFee,
+		totalFee,
+		fee2pay,
+		paidupFee,
+		paidStatus,
+		paymentType_id,
+		FROM `payment`
+		<!--<include refid="baseSql"/>-->
+		LIMIT #{beginIndex},#{rows}
+	</select>
+
+</mapper>

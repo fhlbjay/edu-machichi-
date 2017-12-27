@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.NewStudentChartMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.NewStudentChart">
+        <id column="id" property="id"/>
+        <result column="groupDate" property="groupDate"/>
+        <result column="newStudentNumber" property="newStudentNumber"/>
+        <association property="saleMan" javaType="Employee">
+            <id column="id" property="id"/>
+            <result column="username" property="username"/>
+            <result column="realname" property="realname"/>
+        </association>
+    </resultMap>
+    <sql id="baseSql1">
+        <where>
+            <if test="keyword !=null and keyword != '' ">
+                and  (
+                s.name like concat('%',#{keyword},'%')
+                or s.school like concat('%',#{keyword},'%')
+                or s.address like concat('%',#{keyword},'%')
+                )
+            </if>
+            <if test="beginTime !=null and beginTime != '' ">
+                and s.prevDate  >= #{beginTime}
+            </if>
+            <if test="endTime !=null and endTime != '' ">
+                and s.prevDate  &lt;= #{endTime}
+            </if>
+            <if test="groupMssage!=null and groupMssage !=''">
+                and ${groupMssage}
+            </if>
+        </where>
+    </sql>
+    <select id="newStudentChart" resultMap="BaseResultMap">
+        SELECT
+        s.id,
+        s.prevDate groupDate,
+        e.username,
+        COUNT(s.id) newStudentNumber
+        FROM potentitalstudent s
+        left JOIN officialstudent o on o.potential_id=s.id
+        join employee e
+        on e.id =s.sale_id
+        <include refid="baseSql1"/>
+    </select>
+</mapper>

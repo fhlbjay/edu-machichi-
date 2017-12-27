@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.DetailInfoMapper">
+	<resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.DetailInfo">
+		<id column="id" property="id"/>
+		<result column="official_id" property="official_id"/>
+		<result column="IdNo" property="idNo"/>
+		<result column="emergencyContact" property="emergencyContact"/>
+		<result column="emergencyTel" property="emergencyTel"/>
+		<result column="workExperience" property="workExperience"/>
+		<result column="workIntention" property="workIntention"/>
+	</resultMap>
+	<delete id="deleteByOfficialId" parameterType="java.lang.Long">
+		DELETE FROM `detailinfo`
+		WHERE official_id = #{id}
+	</delete>
+	<insert id="insert" parameterType="cn.wolfcode.crm.domain.DetailInfo" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `detailinfo` (official_id, IdNo, emergencyContact, emergencyTel, workExperience, workIntention
+		)
+		VALUES (#{official_id}, #{idNo}, #{emergencyContact}, #{emergencyTel}, #{workExperience}, #{workIntention}
+		)
+	</insert>
+	<update id="updateByOfficialId" parameterType="cn.wolfcode.crm.domain.DetailInfo">
+		UPDATE `detailinfo`
+		SET
+			IdNo             = #{idNo},
+			emergencyContact = #{emergencyContact},
+			emergencyTel     = #{emergencyTel},
+			workExperience   = #{workExperience},
+			workIntention    = #{workIntention}
+		WHERE official_id = #{id}
+	</update>
+	<select id="selectByOfficialId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		SELECT
+			id,
+			official_id,
+			IdNo,
+			emergencyContact,
+			emergencyTel,
+			workExperience,
+			workIntention
+		FROM `detailinfo`
+		WHERE official_id = #{id}
+	</select>
+</mapper>

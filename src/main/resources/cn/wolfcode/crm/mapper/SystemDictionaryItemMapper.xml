@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.SystemDictionaryItemMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.SystemDictionaryItem">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="intro" property="intro"/>
+        <association property="parent" columnPrefix="p_" javaType="cn.wolfcode.crm.domain.SystemDictionary">
+            <id column="id" property="id"/>
+            <result column="sn" property="sn"/>
+            <result column="name" property="name"/>
+            <result column="intro" property="intro"/>
+        </association>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from `systemdictionaryitem`
+    where id = #{id}
+  </delete>
+    <delete id="deleteItemByParentId">
+        DELETE  from systemdictionaryitem where parent_id=#{id}
+    </delete>
+    <insert id="insert" parameterType="cn.wolfcode.crm.domain.SystemDictionaryItem" useGeneratedKeys="true" keyProperty="id">
+    insert into `systemdictionaryitem` (parent_id, name, intro)
+    values (#{parent.id}, #{name}, #{intro})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.crm.domain.SystemDictionaryItem">
+    update `systemdictionaryitem`
+    set parent_id = #{parent.id},
+      name = #{name},
+      intro = #{intro}
+    where id = #{id}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select id, parent_id, name, intro
+    from `systemdictionaryitem`
+    where id = #{id}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    SELECT item.id, item.parent_id, item.name, item.intro,
+        p.id p_id, p.name p_name ,p.sn p_sn,p.intro p_intro
+        FROM systemdictionaryitem item LEFT join systemdictionary p on item.parent_id =p.id
+  </select>
+    <select id="selectItemByParentSn" resultMap="BaseResultMap">
+        SELECT item.id, item.parent_id, item.name, item.intro,
+        p.id p_id, p.name p_name ,p.sn p_sn,p.intro p_intro
+        FROM systemdictionaryitem item LEFT join systemdictionary p on item.parent_id =p.id
+       where p.sn LIKE #{sn}
+    </select>
+
+
+</mapper>

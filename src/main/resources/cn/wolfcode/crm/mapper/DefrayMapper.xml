@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.DefrayMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.Defray">
+        <id column="id" property="id"/>
+        <result column="defrayTime" property="defrayTime"/>
+        <result column="defrayMoney" property="defrayMoney"/>
+        <result column="remark" property="remark"/>
+        <result column="billnumber" property="billnumber"/>
+        <result column="auditState" property="auditState"/>
+        <association property="applicant" javaType="Employee" columnPrefix="applicant_">
+            <id column="id" property="id"></id>
+            <result column="username" property="username"></result>
+        </association>
+        <association property="handMan" javaType="Employee" columnPrefix="handMan_">
+            <id column="id" property="id"></id>
+            <result column="username" property="username"></result>
+        </association>
+        <association property="auditor" javaType="Employee" columnPrefix="auditor_">
+            <id column="id" property="id"></id>
+            <result column="username" property="username"></result>
+        </association>
+        <association property="paymentType" javaType="SystemDictionaryItem" columnPrefix="paymentType_">
+            <id column="id" property="id"></id>
+            <result column="name" property="name"></result>
+        </association>
+        <association property="defrayType" javaType="SystemDictionaryItem" columnPrefix="defrayType_">
+            <id column="id" property="id"></id>
+            <result column="name" property="name"></result>
+        </association>
+        <association property="classGrade" javaType="ClassGrade" columnPrefix="classGrade_">
+            <id column="id" property="id"></id>
+            <result column="name" property="name"></result>
+        </association>
+    </resultMap>
+
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        DELETE FROM `defray`
+        WHERE id = #{id}
+    </delete>
+    <insert id="insert" parameterType="cn.wolfcode.crm.domain.Defray" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `defray` (defrayTime, defrayMoney, remark, applicantId, handManId, paymentTypeId,
+                              billnumber, defrayTypeId, classGradeId,auditState)
+        VALUES (#{defrayTime}, #{defrayMoney}, #{remark}, #{applicant.id}, #{handMan.id}, #{paymentType.id},
+                               #{billnumber}, #{defrayType.id}, #{classGrade.id},#{auditState})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.crm.domain.Defray">
+        UPDATE `defray`
+        SET
+            defrayMoney   = #{defrayMoney},
+            remark        = #{remark},
+            applicantId   = #{applicant.id},
+            handManId     = #{handMan.id},
+            paymentTypeId = #{paymentType.id},
+            billnumber    = #{billnumber},
+            defrayTypeId  = #{defrayType.id},
+            classGradeId  = #{classGrade.id},
+        auditState = #{auditState}
+        WHERE id = #{id}
+    </update>
+    <!--  //审核-->
+    <update id="changeState">
+        UPDATE `defray`
+        SET auditorId  = #{auditor.id},
+        auditState = TRUE
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT
+        d.id,
+        d.defrayTime,
+        d.defrayMoney,
+        d.remark,
+        d.auditState,
+        d.billnumber,
+        applicant.id       applicant_id,
+        applicant.username applicant_username,
+        handMan.id         handMan_id,
+        handMan.username   handMan_username,
+        auditor.id         auditor_id,
+        auditor.username   auditor_username,
+        defrayType.id      defrayType_id,
+        defrayType.name    defrayType_name,
+        paymentType.id     paymentType_id,
+        paymentType.name   paymentType_name,
+        classgrade.id      classgrade_id,
+        classgrade.name    classgrade_name
+        FROM `defray` d LEFT JOIN employee applicant ON d.applicantId = applicant.id
+        LEFT JOIN employee handMan ON d.handManId = handMan.id
+        LEFT JOIN employee auditor ON d.auditorId = auditor.id
+        LEFT JOIN systemdictionaryitem paymentType ON d.paymentTypeId = paymentType.id
+        LEFT JOIN systemdictionaryitem defrayType ON d.defrayTypeId = defrayType.id
+        LEFT JOIN classgrade classGrade ON d.classGradeId = classGrade.id
+        WHERE d.id = #{id}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+        d.id,
+        d.defrayTime,
+        d.defrayMoney,
+        d.remark,
+        d.auditState,
+        d.billnumber,
+        applicant.id       applicant_id,
+        applicant.username applicant_username,
+        handMan.id         handMan_id,
+        handMan.username   handMan_username,
+        auditor.id         auditor_id,
+        auditor.username   auditor_username,
+        defrayType.id      defrayType_id,
+        defrayType.name    defrayType_name,
+        paymentType.id     paymentType_id,
+        paymentType.name   paymentType_name,
+        classgrade.id      classgrade_id,
+        classgrade.name    classgrade_name
+        FROM `defray` d LEFT JOIN employee applicant ON d.applicantId = applicant.id
+        LEFT JOIN employee handMan ON d.handManId = handMan.id
+        LEFT JOIN employee auditor ON d.auditorId = auditor.id
+        LEFT JOIN systemdictionaryitem paymentType ON d.paymentTypeId = paymentType.id
+        LEFT JOIN systemdictionaryitem defrayType ON d.defrayTypeId = defrayType.id
+        LEFT JOIN classgrade classGrade ON d.classGradeId = classGrade.id
+    </select>
+
+    <select id="queryForCount" resultType="java.lang.Integer">
+        SELECT count(d.id)
+        FROM `defray` d LEFT JOIN employee applicant ON d.applicantId = applicant.id
+        LEFT JOIN employee handMan ON d.handManId = handMan.id
+        LEFT JOIN employee auditor ON d.auditorId = auditor.id
+        LEFT JOIN systemdictionaryitem paymentType ON d.paymentTypeId = paymentType.id
+        LEFT JOIN systemdictionaryitem defrayType ON d.defrayTypeId = defrayType.id
+        LEFT JOIN classgrade classGrade ON d.classGradeId = classGrade.id
+        <include refid="baseSql"/>
+    </select>
+
+    <select id="queryForList" resultMap="BaseResultMap">
+        SELECT d.id, d.defrayTime, d.defrayMoney, d.remark,d.auditState, d.billnumber,
+        applicant.id applicant_id,applicant.username applicant_username,
+        handMan.id handMan_id,handMan.username handMan_username,
+        auditor.id auditor_id, auditor.username auditor_username,
+        defrayType.id defrayType_id, defrayType.name defrayType_name,
+        paymentType.id paymentType_id, paymentType.name paymentType_name,
+        classgrade.id classgrade_id, classgrade.name classgrade_name
+        FROM `defray` d LEFT JOIN employee applicant ON d.applicantId = applicant.id
+        LEFT JOIN employee handMan ON d.handManId = handMan.id
+        LEFT JOIN employee auditor ON d.auditorId = auditor.id
+        LEFT JOIN systemdictionaryitem paymentType ON d.paymentTypeId = paymentType.id
+        LEFT JOIN systemdictionaryitem defrayType ON d.defrayTypeId = defrayType.id
+        LEFT JOIN classgrade classGrade ON d.classGradeId = classGrade.id
+        <include refid="baseSql"/>
+        LIMIT #{beginIndex},#{rows}
+    </select>
+
+
+    <select id="selectByMaxId" resultMap="BaseResultMap">
+        select * from defray where id = (select max(id) from defray)
+    </select>
+
+
+    <!--高级查询共同的sql-->
+    <sql id="baseSql">
+        <where>
+            <if test="keyword!=null and keyword!=''">
+                and (d.remark like concat('%',#{keyword},'%')
+                or d.billnumber like concat('%',#{keyword},'%'))
+            </if>
+            <if test="beginDate!=null">
+                and d.defrayTime >= #{beginDate}
+            </if>
+            <if test="endDate!=null">
+                and d.defrayTime &lt;= #{endDate}
+            </if>
+            <if test="classgradeId!=null and classgradeId>0">
+                and classGradeId = #{classgradeId}
+            </if>
+            <if test="paymentType!=null and paymentType>0">
+                and defrayTypeId = #{paymentType}
+            </if>
+            <if test="auditState!=null ">
+                and d.auditState = #{auditState}
+            </if>
+        </where>
+    </sql>
+</mapper>

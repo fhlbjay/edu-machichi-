@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.crm.mapper.EmployeeMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.crm.domain.Employee">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="realname" property="realname"/>
+        <result column="password" property="password"/>
+        <result column="tel" property="tel"/>
+        <result column="email" property="email"/>
+        <result column="inputtime" property="inputtime"/>
+        <result column="state" property="state"/>
+        <result column="admin" property="admin"/>
+        <!--内联sql查询部门-->
+        <association property="dept" javaType="cn.wolfcode.crm.domain.Department" columnPrefix="d_">
+            <id column="id" property="id"/>
+            <result column="name" property="name"/>
+        </association>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from `employee`
+    where id = #{id}
+  </delete>
+    <insert id="insert" parameterType="cn.wolfcode.crm.domain.Employee" useGeneratedKeys="true" keyProperty="id">
+    insert into `employee` (username, realname, password, tel, email, dept_id, inputtime, admin)
+    values (#{username}, #{realname}, #{password}, #{tel}, #{email}, #{dept.id}, #{inputtime}, #{admin})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.crm.domain.Employee">
+    update `employee`
+    set username = #{username},
+      realname = #{realname},
+      tel = #{tel},
+      email = #{email},
+      dept_id = #{dept.id},
+      inputtime = #{inputtime},
+      admin = #{admin}
+    where id = #{id}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select id, username, realname, password, tel, email, dept_id, inputtime, state, admin
+    from `employee`
+    where id = #{id}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select e.id, e.username, e.realname, e.password,
+        e.tel, e.email, e.dept_id, e.inputtime, e.state,e.admin,
+        d.id d_id,d.sn d_sn,d.name d_name,d.state d_state
+        from employee e left join department d on e.dept_id=d.id
+  </select>
+    <!--高级查询共同的sql-->
+    <sql id="baseSql">
+        <where>
+            <if test="keyword!=null and keyword!=''">
+                and (e.username like concat('%',#{keyword},'%')
+                or e.realname like concat('%',#{keyword},'%')
+                or e.tel like concat('%',#{keyword},'%'))
+            </if>
+            <if test="beginDate!=null">
+                and e.inputtime >= #{beginDate}
+            </if>
+            <if test="endDate!=null">
+                and e.inputtime &lt;= #{endDate}
+            </if>
+            <if test="deptId>0">
+                and e.dept_id = #{deptId}
+            </if>
+        </where>
+    </sql>
+    <!--分页-->
+    <!--查询满足条件总数-->
+    <select id="queryForCount" resultType="int">
+        select count(e.id) from employee e left join department d on e.dept_id=d.id
+        <include refid="baseSql"/>
+    </select>
+    <!--查询满足条件的结果集(有内联sql查询部门信息)-->
+    <select id="queryForList" resultMap="BaseResultMap">
+        select e.id, e.username, e.realname, e.password,
+        e.tel, e.email, e.dept_id, e.inputtime, e.state,e.admin,
+        d.id d_id,d.sn d_sn,d.name d_name,d.state d_state
+        from employee e left join department d on e.dept_id=d.id
+        <include refid="baseSql"/>
+        limit #{beginIndex},#{rows}
+    </select>
+    <!--修改状态-->
+    <update id="changeState">
+        update `employee` set state = state^1 where id = #{id}
+    </update>
+    <!--使用循环的方法维护员工与角色的中间表关系-->
+    <insert id="batchInsertRelation">
+        insert into `employee_role` (employee_id,role_id) values
+        <foreach collection="roles" separator="," item="item">
+            (#{empId}, #{item.id})
+        </foreach>
+    </insert>
+    <!--打破员工与角色的关系-->
+    <delete id="deleteRelation">
+        delete from `employee_role`
+        where employee_id = #{empId}
+    </delete>
+    <!--通过员工id查询相关的角色id,使用中间表即可-->
+    <select id="getRolesByempId" resultType="long">
+        select role_id from employee_role where  employee_id = #{empId}
+    </select>
+    <!--集成shiro根据用户名查询用户信息-->
+    <select id="getEmployeeByUsername" resultMap="BaseResultMap">
+        select id, username, realname, password, tel, email, dept_id, inputtime, state, admin
+    from `employee`
+    where username = #{userName}
+    </select>
+    <!--根据员工id查询班主任信息-->
+    <select id="getTeacherByRoleId" resultMap="BaseResultMap">
+        SELECT e.id,e.username,e.password
+        FROM employee e LEFT JOIN employee_role er ON e.id = er.employee_id
+        JOIN role r ON er.role_id = r.id
+        where r.sn=#{sn}
+    </select>
+    <!--上传课表信息查询老师对象-->
+    <select id="selectTeacher" resultMap="BaseResultMap">
+        select id, username from `employee`
+        WHERE username=#{teacherName}
+    </select>
+    <!--上传课表信息查询班主任对象-->
+    <select id="selectClassTeacher" resultMap="BaseResultMap">
+        select id, username from `employee`
+        WHERE username=#{classTeacherName}
+    </select>
+    <!--查询超级管理员-->
+    <select id="getMangerByRoleSn" resultMap="BaseResultMap">
+        SELECT e.id,e.username,e.password
+        FROM employee e LEFT JOIN employee_role er ON e.id = er.employee_id
+        JOIN role r ON er.role_id = r.id
+        where r.sn=#{sn}
+    </select>
+</mapper>
